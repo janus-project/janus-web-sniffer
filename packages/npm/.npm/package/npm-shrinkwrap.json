@@ -1,0 +1,21 @@
+{
+  "dependencies": {
+    "zmq": {
+      "version": "2.6.0",
+      "dependencies": {
+        "set-immediate": {
+          "version": "0.1.1"
+        },
+        "nan": {
+          "version": "0.8.0"
+        },
+        "bindings": {
+          "version": "1.1.1"
+        }
+      }
+    },
+    "cryptojs": {
+      "version": "2.5.3"
+    }
+  }
+}
