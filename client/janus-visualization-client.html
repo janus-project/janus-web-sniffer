@@ -1,0 +1,49 @@
+<head>
+	<title>Janus Web Sniffer</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<div class="container">
+		<div class="starter-template">
+			<h1>Janus Sniffer Tools</h1>
+			<p class="lead">Here you have a quick overview of all exchanged messages between agents</p>
+		</div>
+        <div>
+            {{> interactions_list}}
+        </div>
+        <div>
+            {{> interactions_list_array}}
+        </div>
+	</div>
+</body>
+
+<template name="interactions_list">
+    <h2>Visualization</h2>
+    <svg>
+        {{#each interaction_event}}
+        {{/each}}
+    </svg>
+</template>
+
+<template name="interactions_list_array">
+    <h2>Agent Interactions</h2>
+    <table class="table table-striped">
+            
+    {{#each interactions}}
+        {{>interaction_info}}       
+        {{else}}
+            <tr class="danger"> <td>No interactions yet</td></tr>
+    {{/each}}
+    </table>
+</template>
+
+<template name="interaction_info">
+    <tr>        
+        <td>{{contextId}}</td>
+        <td>{{spaceId}}</td>
+        <td>{{scope}}</td>
+        <td>{{headers}}</td>
+        <td>{{body}}</td>
+    </tr>
+</template>
