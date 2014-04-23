@@ -1,7 +1,6 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
 
 jtv = new JanusTreeVisualization();
-jtv.init();
 
 Interactions.find({}).observeChanges({
     added: function(id, interaction) {

@@ -1,4 +1,15 @@
-JanusTreeVisualization = function() {};
+JanusTreeVisualization = function() {
+    this.context_by_space = {};
+    this.space_by_context = {};
+    this.interactions_count = 0;
+    this.body_messages = [];
+    this.header_messages = [];
+    this.tree = new Tree();
+    this.width = 2500;
+    this.height = 2000;
+    this.treelayout = {};
+    this.svg = {};
+};
 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     jtv.context_by_space[interaction.spaceId] = interaction.contextId;
@@ -9,12 +20,12 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     var headers = JSON.parse(interaction.headers);
     var msg = JSON.parse(interaction.body);
 
-    if(headers["x-java-event-class"] == "io.sarl.core.ContextJoined") {
+    if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
         if(msg.holonContextID && this.tree.nodeCount == 0) {
             var node = new Node(msg.holonContextID);
             this.tree.addNode(node, "root");
         }
-    } else if(headers["x-java-event-class"] == "io.sarl.core.MemberJoined") {
+    } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
         if(msg.agentID) {
             var node = new Node(msg.agentID);
             this.tree.addNode(node, msg.parentContextID);
@@ -22,23 +33,13 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     }
 };
 
-JanusTreeVisualization.prototype.init = function() {
-    this.context_by_space = {};
-    this.space_by_context = {};
-    this.interactions_count = 0;
-    this.body_messages = [];
-    this.header_messages = [];
-    this.tree = new Tree(new Node('root'));
-    this.width = 960;
-    this.height = 2000;
-};  
-
 JanusTreeVisualization.prototype.update = function() {
+    var padding_y = 0.5;
     var nodes = this.treelayout.nodes(this.tree.root),
         links = this.treelayout.links(nodes);
 
     var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y, d.x]; });
+        .projection(function(d) { return [d.y * padding_y, d.x]; });
  
  //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
     d3.selectAll("g.node").remove();
@@ -54,7 +55,7 @@ JanusTreeVisualization.prototype.update = function() {
         .data(nodes)
         .enter().append("g")
             .attr("class", "node")
-            .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+            .attr("transform", function(d) { return "translate(" + d.y * padding_y + "," + d.x + ")"; })
 
     node.append("circle")
         .attr("r", 5);
@@ -75,8 +76,8 @@ JanusTreeVisualization.prototype.build = function() {
         .attr("transform", "translate(40,0)");
 
     this.treelayout = d3.layout.tree()
-        .size([this.height, this.width - 160]);
+        .size([this.height, this.width]);
 
     var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y, d.x]; });
+        .projection(function(d) { return [d.y, 140 + d.x]; });
 };
