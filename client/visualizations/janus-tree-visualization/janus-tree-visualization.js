@@ -76,7 +76,7 @@ JanusTreeVisualization.prototype.build = function() {
         .attr("transform", "translate(40,0)");
 
     this.treelayout = d3.layout.tree()
-        .size([this.height, this.width]);
+        .size([this.height-20, this.width-140]);
 
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, 140 + d.x]; });
