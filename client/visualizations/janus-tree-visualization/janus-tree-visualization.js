@@ -46,12 +46,17 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
 
 JanusTreeVisualization.prototype.update = function() {
     if(this.tree.root != null) {
+        var left_margin = 200;
         var padding_y = 0.5;
         var nodes = this.treelayout.nodes(this.tree.root),
             links = this.treelayout.links(nodes);
 
         var diagonal = d3.svg.diagonal()
-            .projection(function(d) { return [d.y * padding_y, d.x]; });
+            .projection(function(d) 
+            { 
+                var dy = left_margin + d.y * padding_y;
+                return [dy, d.x]; 
+            });
      
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
         d3.selectAll("g.node").remove();
@@ -67,7 +72,11 @@ JanusTreeVisualization.prototype.update = function() {
             .data(nodes)
             .enter().append("g")
                 .attr("class", "node")
-                .attr("transform", function(d) { return "translate(" + d.y * padding_y + "," + d.x + ")"; })
+                .attr("transform", function(d) 
+                { 
+                    var dy = left_margin + d.y * padding_y;
+                    return "translate(" + dy + "," + d.x + ")"; 
+                })
 
         node.append("circle")
             .attr("r", 5);
@@ -92,14 +101,16 @@ JanusTreeVisualization.prototype.update = function() {
 };
 
 JanusTreeVisualization.prototype.build = function() {
+    var svgWidthScale = 1.6;
+    var treeLayoutScale = 2.6;
+    
     this.svg = d3.select("#janus-tree")
-        .attr("width", this.width)
-        .attr("height", this.height)
-        .attr("transform", "translate(40,0)");
+        .attr("width", this.width * svgWidthScale)
+        .attr("height", this.height);
 
     this.treelayout = d3.layout.tree()
-        .size([this.height, this.width * 2.5]);
+        .size([this.height, this.width * treeLayoutScale]);
 
     var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y, 140 + d.x]; });
+        .projection(function(d) { return [d.y, d.x]; });
 };
