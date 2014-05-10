@@ -91,9 +91,8 @@ JanusTreeVisualization.prototype.update = function() {
 
         var currentDepth = this.tree.getMaxDepth();
         if(this.lastMaxDepth != this.tree.getMaxDepth()) {
-            var uuidWidth = this.tree.root.name.length();
-            var widthScale = 10;
-            this.width = this.width + widthScale * uuidWidth * Math.abs(this.lastMaxDepth - currentDepth);
+            var uuidWidth = this.tree.root.name.length;
+            this.width = this.width + uuidWidth * Math.abs(this.lastMaxDepth - currentDepth);
             this.build();
         }
         this.lastMaxDepth = this.tree.getMaxDepth();

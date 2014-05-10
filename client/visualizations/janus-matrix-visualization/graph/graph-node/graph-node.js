@@ -1,0 +1,3 @@
+GraphNode = function() {
+    
+};
