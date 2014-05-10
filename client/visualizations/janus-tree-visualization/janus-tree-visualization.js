@@ -5,10 +5,11 @@ JanusTreeVisualization = function() {
     this.body_messages = [];
     this.header_messages = [];
     this.tree = new Tree();
-    this.width = 2500;
-    this.height = 2000;
+    this.width = 1000;
+    this.height = 1500;
     this.treelayout = {};
     this.svg = {};
+    this.lastMaxDepth = 0;
 };
 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
@@ -78,6 +79,15 @@ JanusTreeVisualization.prototype.update = function() {
                 .text(function(d) { return d.name; });
 
         d3.select(self.frameElement).style("height", this.height + "px");
+
+        var currentDepth = this.tree.getMaxDepth();
+        if(this.lastMaxDepth != this.tree.getMaxDepth()) {
+            var uuidWidth = this.tree.root.name.length();
+            var widthScale = 10;
+            this.width = this.width + widthScale * uuidWidth * Math.abs(this.lastMaxDepth - currentDepth);
+            this.build();
+        }
+        this.lastMaxDepth = this.tree.getMaxDepth();
     }
 };
 
@@ -88,7 +98,7 @@ JanusTreeVisualization.prototype.build = function() {
         .attr("transform", "translate(40,0)");
 
     this.treelayout = d3.layout.tree()
-        .size([this.height, this.width]);
+        .size([this.height, this.width * 2.5]);
 
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, 140 + d.x]; });
