@@ -31,13 +31,13 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
             if(msg.holonContextID && this.tree.nodeCount == 0) {
-                var node = new Node(msg.holonContextID);
+                var node = new TreeNode(msg.holonContextID);
                 // add root
                 this.tree.addNode(node, null);
             }
         } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID) {
-                var node = new Node(msg.agentID);
+                var node = new TreeNode(msg.agentID);
                 this.tree.addNode(node, msg.parentContextID);
             }
         }

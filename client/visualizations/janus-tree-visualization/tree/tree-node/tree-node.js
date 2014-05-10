@@ -1,10 +1,10 @@
-Node = function(name) {
+TreeNode = function(name) {
     this.name = name;
     this.children = [];
     this.depth = 0;
 };
 
-Node.prototype.visit = function(predicat, params, action, actionParams) {
+TreeNode.prototype.visit = function(predicat, params, action, actionParams) {
     for(var i in this.children) {
         var child = this.children[i];
         child.visit(predicat, params, action, actionParams);

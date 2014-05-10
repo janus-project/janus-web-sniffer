@@ -20,12 +20,19 @@
 
 <template name="interactions_list">
     <h2>Visualization</h2>
-    <svg id="janus-tree">
-        <!--{{#each interaction_event}}
-        {{/each}}-->
-    </svg>
-    <svg id="janus-matrix">
-    </svg>
+    <div id="janus-tree-visualization">
+        <h3>Janus Tree Visualization</h3>
+        <svg id="janus-tree">
+            <!--{{#each interaction_event}}
+            {{/each}}-->
+        </svg>
+    </div>
+
+    <div id="janus-matrix-visualization">
+        <h3>Janus Matrix Visualization</h3>
+        <svg id="janus-matrix">
+        </svg>
+    </div>
 </template>
 
 <template name="interactions_list_array">
