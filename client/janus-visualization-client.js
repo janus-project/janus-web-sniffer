@@ -13,10 +13,6 @@ Template.interactions_list.interactions = function() {
     return Interactions.find({});
 };
 
-Template.interactions_list_array.interactions = function() {
-    return Interactions.find({});
-}
-
 Template.interactions_list.rendered = function () {
     if(!this._rendered) {
         this._rendered = true;
@@ -32,6 +28,10 @@ Template.interactions_list.rendered = function () {
         jtv.update();
     }
 };
+
+Template.interactions_list_array.interactions = function() {
+    return Interactions.find({});
+}
 
 Template.interactions_list.events({
     'click': function () {}
