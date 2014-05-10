@@ -1,6 +1,7 @@
 Node = function(name) {
     this.name = name;
     this.children = [];
+    this.depth = 0;
 };
 
 Node.prototype.visit = function(predicat, params, action, actionParams) {

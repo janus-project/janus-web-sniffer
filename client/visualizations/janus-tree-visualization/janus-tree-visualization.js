@@ -14,69 +14,81 @@ JanusTreeVisualization = function() {
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     jtv.context_by_space[interaction.spaceId] = interaction.contextId;
     jtv.space_by_context[interaction.contextId] = interaction.spaceId;
-    jtv.body_messages.push(JSON.parse(interaction.body));
-    jtv.header_messages.push(JSON.parse(interaction.headers));
 
-    var headers = JSON.parse(interaction.headers);
-    var msg = JSON.parse(interaction.body);
+    var headers, msg;
 
-    if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
-        if(msg.holonContextID && this.tree.nodeCount == 0) {
-            var node = new Node(msg.holonContextID);
-            this.tree.addNode(node, "root");
-        }
-    } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
-        if(msg.agentID) {
-            var node = new Node(msg.agentID);
-            this.tree.addNode(node, msg.parentContextID);
+    // check if string is well formed
+    if(interaction.headers[0] == "{") { 
+        headers = JSON.parse(interaction.headers);
+        jtv.header_messages.push(headers);
+    }
+    if(interaction.body[0] == "{") {
+        msg = JSON.parse(interaction.body);
+        jtv.body_messages.push(msg);
+    }
+            
+    if(headers && msg) {
+        if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
+            if(msg.holonContextID && this.tree.nodeCount == 0) {
+                var node = new Node(msg.holonContextID);
+                // add root
+                this.tree.addNode(node, null);
+            }
+        } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
+            if(msg.agentID) {
+                var node = new Node(msg.agentID);
+                this.tree.addNode(node, msg.parentContextID);
+            }
         }
     }
 };
 
 JanusTreeVisualization.prototype.update = function() {
-    var padding_y = 0.5;
-    var nodes = this.treelayout.nodes(this.tree.root),
-        links = this.treelayout.links(nodes);
+    if(this.tree.root != null) {
+        var padding_y = 0.5;
+        var nodes = this.treelayout.nodes(this.tree.root),
+            links = this.treelayout.links(nodes);
 
-    var diagonal = d3.svg.diagonal()
-        .projection(function(d) { return [d.y * padding_y, d.x]; });
- 
- //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
-    d3.selectAll("g.node").remove();
-    d3.selectAll("path.link").remove();
+        var diagonal = d3.svg.diagonal()
+            .projection(function(d) { return [d.y * padding_y, d.x]; });
+     
+        //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
+        d3.selectAll("g.node").remove();
+        d3.selectAll("path.link").remove();
 
-    var link = this.svg.selectAll("path.link")
-        .data(links)
-        .enter().append("path")
-        .attr("class", "link")
-        .attr("d", diagonal);
+        var link = this.svg.selectAll("path.link")
+            .data(links)
+            .enter().append("path")
+            .attr("class", "link")
+            .attr("d", diagonal);
 
-    var node = this.svg.selectAll("g.node")
-        .data(nodes)
-        .enter().append("g")
-            .attr("class", "node")
-            .attr("transform", function(d) { return "translate(" + d.y * padding_y + "," + d.x + ")"; })
+        var node = this.svg.selectAll("g.node")
+            .data(nodes)
+            .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function(d) { return "translate(" + d.y * padding_y + "," + d.x + ")"; })
 
-    node.append("circle")
-        .attr("r", 5);
+        node.append("circle")
+            .attr("r", 5);
 
-    node.append("text")
-        .attr("dx", function(d) { return d.children ? -8 : 8; })
-        .attr("dy", 3)
-        .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
-            .text(function(d) { return d.name; });
+        node.append("text")
+            .attr("dx", function(d) { return d.children ? -8 : 8; })
+            .attr("dy", 3)
+            .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
+                .text(function(d) { return d.name; });
 
-    d3.select(self.frameElement).style("height", this.height + "px");
+        d3.select(self.frameElement).style("height", this.height + "px");
+    }
 };
 
 JanusTreeVisualization.prototype.build = function() {
-    this.svg = d3.select("svg")
+    this.svg = d3.select("#janus-tree")
         .attr("width", this.width)
         .attr("height", this.height)
         .attr("transform", "translate(40,0)");
 
     this.treelayout = d3.layout.tree()
-        .size([this.height-20, this.width-140]);
+        .size([this.height, this.width]);
 
     var diagonal = d3.svg.diagonal()
         .projection(function(d) { return [d.y, 140 + d.x]; });
