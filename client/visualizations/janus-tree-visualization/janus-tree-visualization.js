@@ -13,19 +13,19 @@ JanusTreeVisualization = function() {
 };
 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
-    jtv.context_by_space[interaction.spaceId] = interaction.contextId;
-    jtv.space_by_context[interaction.contextId] = interaction.spaceId;
+    this.context_by_space[interaction.spaceId] = interaction.contextId;
+    this.space_by_context[interaction.contextId] = interaction.spaceId;
 
     var headers, msg;
 
     // check if string is well formed
     if(interaction.headers[0] == "{") { 
         headers = JSON.parse(interaction.headers);
-        jtv.header_messages.push(headers);
+        this.header_messages.push(headers);
     }
     if(interaction.body[0] == "{") {
         msg = JSON.parse(interaction.body);
-        jtv.body_messages.push(msg);
+        this.body_messages.push(msg);
     }
             
     if(headers && msg) {
