@@ -1,7 +1,6 @@
 JanusTreeVisualization = function() {
     this.context_by_space = {};
     this.space_by_context = {};
-    this.interactions_count = 0;
     this.body_messages = [];
     this.header_messages = [];
     this.tree = new Tree();
