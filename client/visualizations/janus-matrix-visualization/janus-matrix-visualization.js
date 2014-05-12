@@ -5,8 +5,8 @@ JanusMatrixVisualization = function() {
     this.matrix = [];
     this.svg = {};
 
-    this.width = 720,
-    this.height = 720;
+    this.width = 800,
+    this.height = 800;
 };
 
 JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
@@ -27,8 +27,13 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
             var source = msg.source.agentId;
             var dest = interaction.contextId;
 
-            var n1 = new GraphNode(source, "1");
-            var n2 = new GraphNode(dest, "1");
+            var space = "0";
+            if(msg.source.spaceId) {
+                space = msg.source.spaceId.contextID;
+            }
+ 
+            var n1 = new GraphNode(source, "0");
+            var n2 = new GraphNode(dest, "0");
             
             var iSource = this.graph.addNode(n1);
             var iDest = this.graph.addNode(n2);
@@ -47,7 +52,7 @@ JanusMatrixVisualization.prototype.update = function() {
 
     var x = d3.scale.ordinal().domain(d3.range(n)).rangeBands([0, this.width]);
     var z = d3.scale.linear().domain([0, 4]).clamp(true);
-    var c = d3.scale.category10().domain(d3.range(10));
+    var c = d3.scale.category10().domain(d3.range(n));
 
     m = this.matrix;
 
@@ -109,7 +114,7 @@ JanusMatrixVisualization.prototype.update = function() {
     column.append("text")
           .attr("x", 6)
           .attr("y", x.rangeBand() / 2)
-          .attr("dy", ".32em")
+          .attr("dy", ".25em")
           .attr("text-anchor", "start")
           .text(function(d, i) { return nodes[i].name; });
 
@@ -123,14 +128,18 @@ JanusMatrixVisualization.prototype.update = function() {
             .attr("height", x.rangeBand())
             .style("fill-opacity", function(d) { return z(d.z); })
             .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
-            /*.on("mouseover", mouseover)
-            .on("mouseout", mouseout);*/
+            .on("mouseover", mouseover)
+            .on("mouseout", mouseout);
     }
-    /*
+    
     function mouseover(p) {
         d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
         d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
-    }*/
+    }
+
+    function mouseout() {
+        d3.selectAll("text").classed("active", false);
+    }
 };
 
 JanusMatrixVisualization.prototype.build = function() {
