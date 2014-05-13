@@ -1,6 +1,5 @@
-JanusTreeVisualization = function() {
-    this.context_by_space = {};
-    this.space_by_context = {};
+JanusTreeVisualization = function(id) {
+    this.id = id;
     this.body_messages = [];
     this.header_messages = [];
     this.tree = new Tree();
@@ -12,9 +11,6 @@ JanusTreeVisualization = function() {
 };
 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
-    this.context_by_space[interaction.spaceId] = interaction.contextId;
-    this.space_by_context[interaction.contextId] = interaction.spaceId;
-
     var headers, msg;
 
     // check if string is well formed
@@ -58,8 +54,8 @@ JanusTreeVisualization.prototype.update = function() {
             });
      
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
-        d3.selectAll("g.node").remove();
-        d3.selectAll("path.link").remove();
+        d3.selectAll(this.id + " g.node").remove();
+        d3.selectAll(this.id + " path.link").remove();
 
         var link = this.svg.selectAll("path.link")
             .data(links)
@@ -70,12 +66,12 @@ JanusTreeVisualization.prototype.update = function() {
         var node = this.svg.selectAll("g.node")
             .data(nodes)
             .enter().append("g")
-                .attr("class", "node")
-                .attr("transform", function(d) 
-                { 
-                    var dy = left_margin + d.y * padding_y;
-                    return "translate(" + dy + "," + d.x + ")"; 
-                })
+            .attr("class", "node")
+            .attr("transform", function(d) 
+            { 
+                var dy = left_margin + d.y * padding_y;
+                return "translate(" + dy + "," + d.x + ")"; 
+            })
 
         node.append("circle")
             .attr("r", 5);
@@ -84,11 +80,12 @@ JanusTreeVisualization.prototype.update = function() {
             .attr("dx", function(d) { return d.children ? -8 : 8; })
             .attr("dy", 3)
             .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
-                .text(function(d) { return d.name; });
+            .text(function(d) { return d.name; });
 
         d3.select(self.frameElement).style("height", this.height + "px");
 
         var currentDepth = this.tree.getMaxDepth();
+        
         if(this.lastMaxDepth != this.tree.getMaxDepth()) {
             var uuidWidth = this.tree.root.name.length;
             this.width = this.width + uuidWidth * Math.abs(this.lastMaxDepth - currentDepth);
@@ -102,7 +99,7 @@ JanusTreeVisualization.prototype.build = function() {
     var svgWidthScale = 1.6;
     var treeLayoutScale = 2.6;
     
-    this.svg = d3.select("#janus-tree")
+    this.svg = d3.select(this.id)
         .attr("width", this.width * svgWidthScale)
         .attr("height", this.height);
 

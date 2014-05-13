@@ -1,8 +1,9 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
 
-jtv = new JanusTreeVisualization();
-jmv = new JanusMatrixVisualization();
-jcv = new JanusCirclePackVisualization();
+/* construct visualizations with their respective svg ids */
+jtv = new JanusTreeVisualization("#janus-tree");
+jmv = new JanusMatrixVisualization("#janus-matrix");
+jcv = new JanusCirclePackVisualization("#janus-circle-pack");
 
 visualizations = new Array();
 

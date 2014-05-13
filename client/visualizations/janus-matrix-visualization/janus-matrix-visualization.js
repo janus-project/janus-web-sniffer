@@ -1,4 +1,5 @@
-JanusMatrixVisualization = function() {
+JanusMatrixVisualization = function(id) {
+    this.id = id;
     this.graph = new Graph();
     this.header_messages = [];
     this.body_messages = [];
@@ -74,14 +75,14 @@ JanusMatrixVisualization.prototype.update = function() {
     });
 
     // removal 
-    d3.selectAll("g.row").remove();
-    d3.selectAll("g.column").remove();
-    d3.selectAll("rect.background").remove();
+    d3.selectAll(this.id + " g.row").remove();
+    d3.selectAll(this.id + " g.column").remove();
+    d3.selectAll(this.id + " rect.background").remove();
 
     this.svg.append("rect")
-      .attr("class", "background")
-      .attr("width", this.width)
-      .attr("height", this.height);
+        .attr("class", "background")
+        .attr("width", this.width)
+        .attr("height", this.height);
     
     var row = this.svg.selectAll(".row")
         .data(m)
@@ -93,35 +94,35 @@ JanusMatrixVisualization.prototype.update = function() {
         .each(row);
     
     row.append("line")
-          .attr("x2", this.width);
+        .attr("x2", this.width);
 
     row.append("text")
-          .attr("x", -6)
-          .attr("y", x.rangeBand() / 2)
-          .attr("dy", ".32em")
-          .attr("text-anchor", "end")
-          .text(function(d, i) { return nodes[i].name; });
+        .attr("x", -6)
+        .attr("y", x.rangeBand() / 2)
+        .attr("dy", ".32em")
+        .attr("text-anchor", "end")
+        .text(function(d, i) { return nodes[i].name; });
     
     var column = this.svg.selectAll(".column")
-          .data(m)
+        .data(m)
         .enter().append("g")
-          .attr("class", "column")
-          .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
+        .attr("class", "column")
+        .attr("transform", function(d, i) { return "translate(" + x(i) + ")rotate(-90)"; });
 
     column.append("line")
-          .attr("x1", -this.width);
+        .attr("x1", -this.width);
 
     column.append("text")
-          .attr("x", 6)
-          .attr("y", x.rangeBand() / 2)
-          .attr("dy", ".25em")
-          .attr("text-anchor", "start")
-          .text(function(d, i) { return nodes[i].name; });
+        .attr("x", 6)
+        .attr("y", x.rangeBand() / 2)
+        .attr("dy", ".25em")
+        .attr("text-anchor", "start")
+        .text(function(d, i) { return nodes[i].name; });
 
     function row(row) {
         var cell = d3.select(this).selectAll(".cell")
             .data(row.filter(function(d) { return d.z; }))
-          .enter().append("rect")
+            .enter().append("rect")
             .attr("class", "cell")
             .attr("x", function(d) { return x(d.x); })
             .attr("width", x.rangeBand())
@@ -145,10 +146,10 @@ JanusMatrixVisualization.prototype.update = function() {
 JanusMatrixVisualization.prototype.build = function() {
     var margin = {top: 300, right: 0, bottom: 10, left: 300};
 
-    this.svg = d3.select("#janus-matrix")
+    this.svg = d3.select(this.id)
         .attr("width", this.width + margin.left + margin.right)
         .attr("height", this.height + margin.top + margin.bottom)
         .style("margin-left", -margin.left / 10 + "px")
-      .append("g")
+        .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 };

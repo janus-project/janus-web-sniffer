@@ -1,18 +1,29 @@
+/* svg css */
+
+text {
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* janus tree visualization css */
+
 .node circle {
-    fill: #fff;
-    stroke: steelblue;
-    stroke-width: 1.5px;
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }
 
 .node {
-    font: 10px sans-serif;
+  font: 10px sans-serif;
 }
 
 .link {
-    fill: none;
-    stroke: #ccc;
-    stroke-width: 1.5px;
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
 }
+
+/* janus matrix visualization css */
 
 .background {
   fill: #000;
@@ -25,3 +36,32 @@ line {
 text.active {
   fill: red;
 }
+
+/* janus circle pack visualization css */
+
+text.parent {
+  fill: #000;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #999;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+  stroke: steelblue;
+}
+
+circle.parent:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+circle.child {
+  pointer-events: none;
+}
+
+    
