@@ -29,11 +29,16 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
             
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
-            if(msg.holonContextID && this.tree.nodeCount == 0) {
-                var node = new TreeNode(msg.holonContextID);
-                // add root
-                node.size =  5000;
-                this.tree.addNode(node, null);
+            if(msg.holonContextID) { 
+                if(this.tree.nodeCount == 0) {
+                    // add root
+                    var node = new TreeNode(msg.holonContextID);
+                    node.size = 5000;
+                    this.tree.addNode(node, null);
+                } 
+                var node = new TreeNode(interaction.contextId);
+                node.size = 5000;	
+                this.tree.addNode(node, msg.holonContextID);
             }
         } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID) {
@@ -46,34 +51,36 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
 };
 
 JanusCirclePackVisualization.prototype.update = function() {
-	this.node = this.root = this.tree;
+	if(this.tree.root != null) {
+		this.node = this.root = this.tree;
 
-	var nodes = this.pack.nodes(this.tree.root);
+		var nodes = this.pack.nodes(this.tree.root);
 
-    d3.selectAll(this.id + " text").remove();
-    d3.selectAll(this.id + " circle").remove();
+	    d3.selectAll(this.id + " text").remove();
+	    d3.selectAll(this.id + " circle").remove();
 
-	this.svg.selectAll("circle")
-		.data(nodes)
-		.enter().append("svg:circle")
-		.attr("class", function(d) { return d.children ? "parent" : "child"; })
-		.attr("cx", function(d) { return d.x; })
-		.attr("cy", function(d) { return d.y; })
-		.attr("r", function(d) { return d.r; })
-		.on("click", function(d) { return this.zoom(node == d ? this.root : d); });
+		this.svg.selectAll("circle")
+			.data(nodes)
+			.enter().append("svg:circle")
+			.attr("class", function(d) { return d.children ? "parent" : "child"; })
+			.attr("cx", function(d) { return d.x; })
+			.attr("cy", function(d) { return d.y; })
+			.attr("r", function(d) { return d.r; })
+			.on("click", function(d) { return this.zoom(this.node == d ? this.root : d); });
 
-	this.svg.selectAll("text")
-	  	.data(nodes)
-		.enter().append("svg:text")
-		.attr("class", function(d) { return d.children ? "parent" : "child"; })
-		.attr("x", function(d) { return d.x; })
-		.attr("y", function(d) { return d.y; })
-		.attr("dy", ".35em")
-		.attr("text-anchor", "middle")
-		.style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
-		.text(function(d) { return d.name; });
+		this.svg.selectAll("text")
+		  	.data(nodes)
+			.enter().append("svg:text")
+			.attr("class", function(d) { return d.children ? "parent" : "child"; })
+			.attr("x", function(d) { return d.x; })
+			.attr("y", function(d) { return d.y; })
+			.attr("dy", ".35em")
+			.attr("text-anchor", "middle")
+			.style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
+			.text(function(d) { return d.name; });
 
-	d3.select(window).on("click", function() { this.zoom(root); });
+		d3.select(window).on("click", function() { this.zoom(this.root); });
+	}
 };
 
 JanusCirclePackVisualization.prototype.build = function() {
@@ -99,16 +106,16 @@ JanusCirclePackVisualization.prototype.zoom = function(d, i) {
 	var t = vis.transition()
 	  .duration(d3.event.altKey ? 7500 : 750);
 
-	t.selectAll("circle")
+	t.selectAll(this.id + "circle")
 	  .attr("cx", function(d) { return this.x(d.x); })
 	  .attr("cy", function(d) { return this.y(d.y); })
 	  .attr("r", function(d) { return k * d.r; });
 
-	t.selectAll("text")
+	t.selectAll(this.id + "text")
 	  .attr("x", function(d) { return this.x(d.x); })
 	  .attr("y", function(d) { return this.y(d.y); })
 	  .style("opacity", function(d) { return k * d.r > 20 ? 1 : 0; });
 
-	node = d;
+	this.node = d;
 	d3.event.stopPropagation();
 };

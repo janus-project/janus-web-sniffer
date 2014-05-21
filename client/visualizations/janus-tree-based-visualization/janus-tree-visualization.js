@@ -25,10 +25,14 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
             
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
-            if(msg.holonContextID && this.tree.nodeCount == 0) {
-                var node = new TreeNode(msg.holonContextID);
-                // add root
-                this.tree.addNode(node, null);
+            if(msg.holonContextID) { 
+                if(this.tree.nodeCount == 0) {
+                    // add root
+                    var node = new TreeNode(msg.holonContextID);
+                    this.tree.addNode(node, null);
+                } 
+                var node = new TreeNode(interaction.contextId);
+                this.tree.addNode(node, msg.holonContextID);
             }
         } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID) {
@@ -41,7 +45,7 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
 
 JanusTreeVisualization.prototype.update = function() {
     if(this.tree.root != null) {
-        var left_margin = 200;
+        var left_margin = 210;
         var padding_y = 0.5;
         var nodes = this.treelayout.nodes(this.tree.root),
             links = this.treelayout.links(nodes);
