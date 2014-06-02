@@ -20,18 +20,13 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     this.body_messages.push(msg);
             
     if(headers && msg) {
-        if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
-            if(msg.holonContextID) { 
+        if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
+            if(msg.agentID && msg.parentContextID) {
                 if(this.tree.nodeCount == 0) {
                     // add root
-                    var node = new TreeNode(msg.holonContextID);
+                    var node = new TreeNode(msg.parentContextID);
                     this.tree.addNode(node, null);
                 } 
-                var node = new TreeNode(msg.source.agentId);
-                this.tree.addNode(node, msg.holonContextID);
-            }
-        } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
-            if(msg.agentID) {
                 var node = new TreeNode(msg.agentID);
                 this.tree.addNode(node, msg.parentContextID);
             }

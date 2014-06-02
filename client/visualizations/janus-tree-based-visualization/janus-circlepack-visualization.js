@@ -23,20 +23,14 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
     msg = JSON.parse(interaction.body);	
             
     if(headers && msg) {
-        if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
-            if(msg.holonContextID) { 
-                if(this.tree.nodeCount == 0) {
+    	if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
+            if(msg.agentID && msg.parentContextID) {
+            	if(this.tree.nodeCount == 0) {
                     // add root
-                    var node = new TreeNode(msg.holonContextID);
+                    var node = new TreeNode(msg.parentContextID);
                     node.size = 5000;
                     this.tree.addNode(node, null);
                 } 
-                var node = new TreeNode(interaction.contextId);
-                node.size = 5000;	
-                this.tree.addNode(node, msg.holonContextID);
-            }
-        } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
-            if(msg.agentID) {
                 var node = new TreeNode(msg.agentID);
                 node.size =  5000;
                 this.tree.addNode(node, msg.parentContextID);
