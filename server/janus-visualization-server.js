@@ -1,18 +1,30 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
-//Interactions.remove({});
+Interactions.remove({});
 
-function handle_event_envelope(contextID, spaceID, scope, headers,body) {
-    console.log(contextID.toString('utf8'));
+function debuildFilterableHeader(header) {
+    return header.slice(4, header.length);
+}
+
+function handle_event_envelope(contextID, spaceIDL, spaceID, scopeL, scope, headersL, headers, bodyL, body) {
+    console.log(debuildFilterableHeader(contextID).toString('utf8'));
+    console.log(spaceIDL.toString('utf8'));
     console.log(spaceID.toString('utf8'));
+    console.log(scopeL.toString('utf8'));
     console.log(scope.toString('utf8'));
+    console.log(headersL.toString('utf8'));
     console.log(headers.toString('utf8'));
+    console.log(bodyL.toString('utf8'));
     console.log(body.toString('utf8'));
 
     Interactions.insert({
-        contextId: contextID.toString('utf8'), 
+        contextId: debuildFilterableHeader(contextID).toString('utf8'), 
+        spaceIdL: spaceIDL.toString('utf8'), 
         spaceId: spaceID.toString('utf8'), 
+        scopeL: scopeL.toString('utf8'), 
         scope: scope.toString('utf8'), 
+        headersL:headersL.toString('utf8'), 
         headers:headers.toString('utf8'), 
+        bodyL: bodyL.toString('utf8'),
         body: body.toString('utf8'),
         created_at: new Date()
     });
