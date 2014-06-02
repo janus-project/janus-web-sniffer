@@ -12,16 +12,12 @@ JanusMatrixVisualization = function(id) {
 
 JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
-
-    // check if string is well formed
-    if(interaction.headers[0] == "{") { 
-        headers = JSON.parse(interaction.headers);
-        this.header_messages.push(headers);
-    }
-    if(interaction.body[0] == "{") {
-        msg = JSON.parse(interaction.body);
-        this.body_messages.push(msg);
-    }
+    
+    headers = JSON.parse(interaction.headers);
+    this.header_messages.push(headers);
+    
+    msg = JSON.parse(interaction.body);
+    this.body_messages.push(msg);
 
     if(msg) {
         if(msg.source != null) {

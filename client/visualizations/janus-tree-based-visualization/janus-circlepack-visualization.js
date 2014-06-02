@@ -19,13 +19,8 @@ JanusCirclePackVisualization = function(id) {
 JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
 
-    if(interaction.headers[0] == "{") { 
-        headers = JSON.parse(interaction.headers);
-    }
-
-    if(interaction.body[0] == "{") {
-        msg = JSON.parse(interaction.body);
-    }
+    headers = JSON.parse(interaction.headers);
+    msg = JSON.parse(interaction.body);	
             
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {

@@ -12,16 +12,12 @@ JanusTreeVisualization = function(id) {
 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
+ 
+    headers = JSON.parse(interaction.headers);
+    this.header_messages.push(headers);
 
-    // check if string is well formed
-    if(interaction.headers[0] == "{") { 
-        headers = JSON.parse(interaction.headers);
-        this.header_messages.push(headers);
-    }
-    if(interaction.body[0] == "{") {
-        msg = JSON.parse(interaction.body);
-        this.body_messages.push(msg);
-    }
+    msg = JSON.parse(interaction.body);
+    this.body_messages.push(msg);
             
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["context-joined"]) {
@@ -31,7 +27,7 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
                     var node = new TreeNode(msg.holonContextID);
                     this.tree.addNode(node, null);
                 } 
-                var node = new TreeNode(interaction.contextId);
+                var node = new TreeNode(msg.source.agentId);
                 this.tree.addNode(node, msg.holonContextID);
             }
         } else if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
