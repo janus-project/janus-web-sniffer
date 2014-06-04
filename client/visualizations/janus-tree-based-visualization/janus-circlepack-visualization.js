@@ -41,6 +41,7 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
 
 JanusCirclePackVisualization.prototype.update = function() {
 	if(this.tree.root != null) {
+		var jpv = this;
 		this.node = this.root = this.tree;
 
 		var nodes = this.pack.nodes(this.tree.root);
@@ -55,20 +56,24 @@ JanusCirclePackVisualization.prototype.update = function() {
 			.attr("cx", function(d) { return d.x; })
 			.attr("cy", function(d) { return d.y; })
 			.attr("r", function(d) { return d.r; })
-			.on("click", function(d) { return this.zoom(this.node == d ? this.root : d); });
+            .on("mouseover", function(d) { jpv.displayText(d.name, true); })
+            .on("mouseout", function(d) { jpv.displayText(d.name, false); })
+			.on("click", function(d) { return jpv.zoom(jpv.node == d ? jpv.root : d); });
 
 		this.svg.selectAll("text")
 		  	.data(nodes)
 			.enter().append("svg:text")
-			.attr("class", function(d) { return d.children ? "parent" : "child"; })
+			.attr("class", function(d) { return Utils.packJanusId(d.name); })
+			//.attr("class", function(d) { return d.children ? "parent" : "child"; })
 			.attr("x", function(d) { return d.x; })
 			.attr("y", function(d) { return d.y; })
 			.attr("dy", ".35em")
 			.attr("text-anchor", "middle")
+            .attr("visibility", "hidden")
 			.style("opacity", function(d) { return d.r > 20 ? 1 : 0; })
 			.text(function(d) { return d.name; });
 
-		d3.select(window).on("click", function() { this.zoom(this.root); });
+		d3.select(window).on("click", function() { jpv.zoom(jpv.root); });
 	}
 };
 
@@ -92,7 +97,7 @@ JanusCirclePackVisualization.prototype.zoom = function(d, i) {
 	this.x.domain([d.x - d.r, d.x + d.r]);
 	this.y.domain([d.y - d.r, d.y + d.r]);
 
-	var t = vis.transition()
+	var t = this.svg.transition()
 	  .duration(d3.event.altKey ? 7500 : 750);
 
 	t.selectAll(this.id + "circle")
@@ -107,4 +112,9 @@ JanusCirclePackVisualization.prototype.zoom = function(d, i) {
 
 	this.node = d;
 	d3.event.stopPropagation();
+};
+
+JanusCirclePackVisualization.prototype.displayText = function(id, visible) {
+    d3.selectAll(this.id + " text." + Utils.packJanusId(id))
+        .attr("visibility", visible ? "visible" : "hidden");
 };

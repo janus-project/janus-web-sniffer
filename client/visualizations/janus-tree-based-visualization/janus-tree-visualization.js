@@ -134,6 +134,6 @@ JanusTreeVisualization.prototype.build = function() {
 };
 
 JanusTreeVisualization.prototype.displayMessage = function(id, visible) {
-    d3.selectAll("text." + Utils.packJanusId(id))
+    d3.selectAll(this.id + " text." + Utils.packJanusId(id))
         .attr("visibility", visible ? "visible" : "hidden");
 };
