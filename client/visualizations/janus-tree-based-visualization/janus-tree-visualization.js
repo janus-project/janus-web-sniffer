@@ -22,7 +22,13 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     if(headers && msg) {
         if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID && msg.parentContextID) {
-                var message = "test";
+                var message = [];
+
+                // add additionnal informations here
+                message.push("agent type : " + msg.agentType); 
+                message.push("space id : " + msg.source.spaceId.id);
+                message.push("context id : " + msg.source.spaceId.contextID);
+
                 if(this.tree.nodeCount == 0) {
                     // add root
                     var node = new TreeNode(msg.parentContextID, message);
@@ -38,7 +44,7 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
 JanusTreeVisualization.prototype.update = function() {
     if(this.tree.root != null) {
         var jtv = this;
-        var left_margin = 210;
+        var left_margin = 280;
         var padding_y = 0.5;
         var nodes = this.treelayout.nodes(this.tree.root),
             links = this.treelayout.links(nodes);
@@ -66,19 +72,29 @@ JanusTreeVisualization.prototype.update = function() {
             .attr("class", "node")
             .on("mouseover", function(d) { jtv.displayMessage(d.name, true); })
             .on("mouseout", function(d) { jtv.displayMessage(d.name, false); })
-            .attr("transform", function(d) 
-            { 
+            .attr("transform", function(d) { 
                 var dy = left_margin + d.y * padding_y;
                 return "translate(" + dy + "," + d.x + ")"; 
             });
 
+        var lineHeight = 15;
+        var paddingRight = -20;
         node.append("text")
-            .attr("dx", 20) //function(d) { return d.children ? -8 : 8; })
-            .attr("dy", 20)
+            .attr("dx", paddingRight) 
+            .attr("dy", 2 * lineHeight)
             .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
             .attr("visibility", "hidden")
             .attr("class", function(d) { return Utils.packJanusId(d.name); })
-            .text(function(d) { return d.message; });
+            .text("additionnal informations")
+            .each(function(d) {
+                var text = d3.select(this);
+                for(var i = 0; i < d.message.length; ++i) {
+                    text.append("tspan")
+                        .attr("x", paddingRight)
+                        .attr("y", (i + 3) * lineHeight)
+                        .text(d.message[i]);
+                }
+            });
 
         node.append("circle")
             .attr("r", 5);

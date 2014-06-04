@@ -1,5 +1,5 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
-Interactions.remove({});
+//Interactions.remove({});
 
 function debuildFilterableHeader(header) {
     return header.slice(4, header.length);
