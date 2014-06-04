@@ -133,24 +133,27 @@ JanusMatrixVisualization.prototype.update = function() {
             .attr("height", x.rangeBand())
             .style("fill-opacity", function(d) { return z(d.z); })
             .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
-            .on("mouseover", function(d) { 
-                mouseover(d);
-            })
+            .on("mouseover", mouseover)
             .on("mouseout", mouseout);
     }
     
     function mouseover(d) {
-        console.log(d.messages); 
         var coord = Utils.getAbsoluteMouseCoordinates();
-        py = 15;
+        var py = 20;
+        var maxStringWidth = 0;
+        for(var i = 0; i < d.messages.length; ++i) {
+            var l = d.messages[i].length;
+            maxStringWidth = maxStringWidth > l ? maxStringWidth : l;
+        }
+
         for(var i = 0; i < d.messages.length; ++i) {
             var x = coord[0];
             var y = coord[1];
             y += (i * py);
             d3.select("body")
                 .append("div")
-                .attr("class", "hover-message")
-                .style("position", "absolute")
+                .attr("class", "hovermessage message-id" + d.x + d.y)
+                .style("width", 8 * maxStringWidth + "px")
                 .style("left", x + "px")
                 .style("top", y + "px")
                 .text(d.messages[i]);
@@ -159,8 +162,8 @@ JanusMatrixVisualization.prototype.update = function() {
         d3.selectAll(".column text").classed("active", function(data, i) { return i == d.x; });
     }
 
-    function mouseout() {
-        d3.selectAll(".hover-message").remove();
+    function mouseout(d) {
+        d3.selectAll(".message-id" + d.x + d.y).remove();
         d3.selectAll("text").classed("active", false);
     }
 };
