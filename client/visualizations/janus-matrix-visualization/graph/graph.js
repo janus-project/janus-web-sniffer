@@ -21,11 +21,9 @@ Graph.prototype.addLink = function(link) {
         var l = this.links[i];
         if(l.target == link.target && l.source == link.source) {
             l.value += link.value;
-            exists = true;
-            break;
+            return l;
         }
     }
-    if(!exists) {
-        this.links.push(link);
-    }
+    this.links.push(link);
+    return link;
 };

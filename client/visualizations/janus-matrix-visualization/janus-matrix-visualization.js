@@ -15,7 +15,7 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
     
     headers = JSON.parse(interaction.headers);
     this.header_messages.push(headers);
-    
+
     msg = JSON.parse(interaction.body);
     this.body_messages.push(msg);
 
@@ -23,6 +23,8 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
         if(msg.source != null) {
             var source = msg.source.agentId;
             var dest = interaction.contextId;
+            // remove io.sarl.core
+            var message = headers[janus_events["event-type"]].split('.')[3];
 
             var space = "0";
             if(msg.source.spaceId) {
@@ -36,9 +38,9 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
             var iDest = this.graph.addNode(n2);
 
             var value = 1;
-            var link = new Link(iSource, iDest, value);
-
-            this.graph.addLink(link);
+            var link = new Link(iSource, iDest, value, message);
+            link = this.graph.addLink(link);
+            link.addMessage(message);
         }
     }
 };
@@ -57,7 +59,7 @@ JanusMatrixVisualization.prototype.update = function() {
         node.index = i;
         node.count = 0;
         m[i] = d3.range(n).map(function(j) {
-            return {x: j, y: i, z: 0}; 
+            return {x: j, y: i, z: 0, message: ""}; 
         });
     });
 
@@ -66,6 +68,12 @@ JanusMatrixVisualization.prototype.update = function() {
         m[link.target][link.source].z += link.value;
         m[link.source][link.source].z += link.value;
         m[link.target][link.target].z += link.value;
+
+        m[link.source][link.target].messages = link.messages;
+        m[link.target][link.source].messages = link.messages;
+        m[link.source][link.source].messages = link.messages;
+        m[link.target][link.target].messages = link.messages;
+
         nodes[link.source].count += link.value;
         nodes[link.target].count += link.value;
     });
@@ -125,16 +133,34 @@ JanusMatrixVisualization.prototype.update = function() {
             .attr("height", x.rangeBand())
             .style("fill-opacity", function(d) { return z(d.z); })
             .style("fill", function(d) { return nodes[d.x].group == nodes[d.y].group ? c(nodes[d.x].group) : null; })
-            .on("mouseover", mouseover)
+            .on("mouseover", function(d) { 
+                mouseover(d);
+            })
             .on("mouseout", mouseout);
     }
     
-    function mouseover(p) {
-        d3.selectAll(".row text").classed("active", function(d, i) { return i == p.y; });
-        d3.selectAll(".column text").classed("active", function(d, i) { return i == p.x; });
+    function mouseover(d) {
+        console.log(d.messages); 
+        var coord = Utils.getAbsoluteMouseCoordinates();
+        py = 15;
+        for(var i = 0; i < d.messages.length; ++i) {
+            var x = coord[0];
+            var y = coord[1];
+            y += (i * py);
+            d3.select("body")
+                .append("div")
+                .attr("class", "hover-message")
+                .style("position", "absolute")
+                .style("left", x + "px")
+                .style("top", y + "px")
+                .text(d.messages[i]);
+        }
+        d3.selectAll(".row text").classed("active", function(data, i) { return i == d.y; });
+        d3.selectAll(".column text").classed("active", function(data, i) { return i == d.x; });
     }
 
     function mouseout() {
+        d3.selectAll(".hover-message").remove();
         d3.selectAll("text").classed("active", false);
     }
 };
