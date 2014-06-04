@@ -1,4 +1,5 @@
-TreeNode = function(name) {
+TreeNode = function(name, message) {
+    this.message = message;
     this.name = name;
     this.children = [];
     this.depth = 0;
