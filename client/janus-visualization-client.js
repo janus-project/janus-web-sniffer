@@ -1,4 +1,5 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
+var InteractionsTable = new Meteor.Collection("janus_event_visualization");
 
 /* construct visualizations with their respective svg ids */
 jtv = new JanusTreeVisualization("#janus-tree");
@@ -46,5 +47,5 @@ Template.interactions_list.rendered = function () {
 };
 
 Template.interactions_list_array.interactions = function() {
-    return Interactions.find({});
+    return InteractionsTable.find({});
 }
