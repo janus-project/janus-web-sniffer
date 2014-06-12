@@ -1,3 +1,11 @@
+.display_visu {
+  font: 25px sans-serif;
+}
+
+.display_visu:hover {
+  text-decoration:none;
+}
+
 /* svg css */
 
 text {
