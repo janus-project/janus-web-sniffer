@@ -40,7 +40,7 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
             var iSource = this.graph.addNode(n1);
             var iDest = this.graph.addNode(n2);
 
-            var value = 1;
+            var value = 0.2;
             var link = new Link(iSource, iDest, value, message);
             link = this.graph.addLink(link);
             link.addMessage(message);
@@ -56,7 +56,7 @@ JanusMatrixVisualization.prototype.update = function() {
     var n = nodes.length;
 
     var x = d3.scale.ordinal().domain(d3.range(n)).rangeBands([0, this.width]);
-    var z = d3.scale.linear().domain([0, 4]).clamp(true);
+    var z = d3.scale.linear().domain([0, 1]).clamp(true);
     var c = d3.scale.category10().domain(d3.range(n));
 
     m = this.matrix;
@@ -70,10 +70,10 @@ JanusMatrixVisualization.prototype.update = function() {
     });
 
     this.graph.links.forEach(function(link) {
-        m[link.source][link.target].z += link.value;
-        m[link.target][link.source].z += link.value;
-        m[link.source][link.source].z += link.value;
-        m[link.target][link.target].z += link.value;
+        m[link.source][link.target].z = link.value;
+        m[link.target][link.source].z = link.value;
+        m[link.source][link.source].z = link.value;
+        m[link.target][link.target].z = link.value;
 
         m[link.source][link.target].messages = link.messages;
         m[link.target][link.source].messages = link.messages;

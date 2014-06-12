@@ -23,6 +23,12 @@ text {
   stroke-width: 1.5px;
 }
 
+.node rect {
+  fill: #eee;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
 /* janus matrix visualization css */
 
 .background {
@@ -34,7 +40,7 @@ line {
 }
 
 text.active {
-  fill: red;
+  fill: steelblue;
 }
 
 /* janus circle pack visualization css */
@@ -45,18 +51,16 @@ text.parent {
 
 circle {
   fill: #ccc;
-  stroke: #999;
   pointer-events: all;
 }
 
 circle.parent {
   fill: #1f77b4;
   fill-opacity: .1;
-  stroke: steelblue;
 }
 
 circle.parent:hover {
-  stroke: #ff7f0e;
+  stroke: #000;
   stroke-width: .5px;
 }
 
@@ -66,10 +70,14 @@ circle.child {
 
 /* jauns matrix hover messages */
 .hovermessage {
-  background-color: black;
-  padding: 5px;
+  background-color: #eee; 
+  padding: 0px;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 2px;
   position: absolute;
-  color: white;
+  padding-left: 5px;
+  color: #000;
   font-size: 11px;
 }
 

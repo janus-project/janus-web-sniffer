@@ -84,6 +84,17 @@ JanusTreeVisualization.prototype.update = function() {
                 return "translate(" + dy + "," + d.x + ")"; 
             });
 
+
+        node.append("rect")
+        .attr("x", -300)
+        .attr("y", 10)
+        .attr("height", 80)
+        .attr("width", 300)
+        .attr("rx", 10)
+        .attr("ry", 10)
+        .attr("visibility", "hidden")
+        .attr("class", function(d) { return Utils.packJanusId(d.name); })
+
         var lineHeight = 15;
         var paddingRight = -20;
         node.append("text")
@@ -92,7 +103,7 @@ JanusTreeVisualization.prototype.update = function() {
             .attr("text-anchor", function(d) { return d.children ? "end" : "start"; })
             .attr("visibility", "hidden")
             .attr("class", function(d) { return Utils.packJanusId(d.name); })
-            .text("additionnal informations")
+            .text("agent")
             .each(function(d) {
                 var text = d3.select(this);
                 for(var i = 0; i < d.message.length; ++i) {
@@ -105,7 +116,7 @@ JanusTreeVisualization.prototype.update = function() {
 
         node.append("circle")
             .attr("r", 5);
-
+        
         node.append("text")
             .attr("dx", function(d) { return d.children ? -8 : 8; })
             .attr("dy", 3)
@@ -145,5 +156,7 @@ JanusTreeVisualization.prototype.build = function() {
 
 JanusTreeVisualization.prototype.displayMessage = function(id, visible) {
     d3.selectAll(this.id + " text." + Utils.packJanusId(id))
+        .attr("visibility", visible ? "visible" : "hidden");
+    d3.selectAll(this.id + " rect." + Utils.packJanusId(id))
         .attr("visibility", visible ? "visible" : "hidden");
 };
