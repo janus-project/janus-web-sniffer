@@ -3,6 +3,10 @@ Tree = function() {
     this.nodeCount = 0;
 };
 
+/**
+ * Gets the depth of the tree
+ *  return the depth
+ */
 Tree.prototype.getMaxDepth = function() {
     var maxDepth = 0;
     if(this.root != null) {
@@ -20,6 +24,11 @@ Tree.prototype.getMaxDepth = function() {
     return maxDepth;
 }
 
+/**
+ * Adds a node in the tree
+ *  node : Node is the node to add
+ *  parentName : String is the name of the parent to attach node
+ */ 
 Tree.prototype.addNode = function(node, parentName) {
     if(this.root == null) {
         this.root = node;

@@ -8,15 +8,19 @@ jcv = new JanusCirclePackVisualization("#janus-circle-pack");
 
 visualizations = new Array();
 
+/* add all the visualizations */ 
 visualizations.push(jtv);
 visualizations.push(jmv);
 visualizations.push(jcv);
 
+/* handled when a change is observed in the collection */
 Interactions.find({}).observeChanges({
     added: function(id, interaction) {
         for(var i in visualizations) {
             v = visualizations[i];
+            // add a new interaction
             v.addInteraction(interaction);
+            // update display
             v.update();
         }
     }

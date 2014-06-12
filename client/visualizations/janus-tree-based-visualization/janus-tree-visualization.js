@@ -10,6 +10,10 @@ JanusTreeVisualization = function(id) {
     this.lastMaxDepth = 0;
 };
 
+/**
+ * Adds an interaction in the visualization
+ *  interaction is the interaction to add
+ */ 
 JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
  
@@ -41,6 +45,9 @@ JanusTreeVisualization.prototype.addInteraction = function(interaction) {
     }
 };
 
+/** 
+ * Update the d3 visualization
+ */
 JanusTreeVisualization.prototype.update = function() {
     if(this.tree.root != null) {
         var jtv = this;
@@ -118,6 +125,9 @@ JanusTreeVisualization.prototype.update = function() {
     }
 };
 
+/**
+ * Constructs the svg and the layout of this visualization
+ */
 JanusTreeVisualization.prototype.build = function() {
     var svgWidthScale = 1.6;
     var treeLayoutScale = 2.6;

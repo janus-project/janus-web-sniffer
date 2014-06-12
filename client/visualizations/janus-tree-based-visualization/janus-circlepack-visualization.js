@@ -16,6 +16,10 @@ JanusCirclePackVisualization = function(id) {
     this.root = {};
 };
 
+/**
+ * Adds an interaction in the visualization
+ *  interaction : the interaction to add
+ */ 
 JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
 
@@ -39,6 +43,9 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
     }
 };
 
+/** 
+ * Update the d3 visualization
+ */
 JanusCirclePackVisualization.prototype.update = function() {
 	if(this.tree.root != null) {
 		var jpv = this;
@@ -77,6 +84,9 @@ JanusCirclePackVisualization.prototype.update = function() {
 	}
 };
 
+/**
+ * Build the layout and the svg
+ */
 JanusCirclePackVisualization.prototype.build = function() {
     this.x = d3.scale.linear().range([0, this.r]);
     this.y = d3.scale.linear().range([0, this.r]);
@@ -92,6 +102,10 @@ JanusCirclePackVisualization.prototype.build = function() {
 		.attr("transform", "translate(" + (this.w - this.r) / 2 + "," + (this.h - this.r) / 2 + ")");
 };
 
+
+/**
+ * WIP : not functionnal -- was intended to make a zoom in the circle pack visualization
+ */
 JanusCirclePackVisualization.prototype.zoom = function(d, i) {
 	var k = this.r / d.r / 2;
 	this.x.domain([d.x - d.r, d.x + d.r]);

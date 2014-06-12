@@ -10,6 +10,9 @@ JanusMatrixVisualization = function(id) {
     this.height = 800;
 };
 
+/**
+ * Adds an interaction : interaction is the interaction to add
+ */ 
 JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
     
@@ -31,7 +34,7 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
                 space = msg.source.spaceId.contextID;
             }
  
-            var n1 = new GraphNode(source, "0");
+            var n1 = new GraphNode(source, "0" /* could make some groups color by changing this value*/ );
             var n2 = new GraphNode(dest, "0");
             
             var iSource = this.graph.addNode(n1);
@@ -45,6 +48,9 @@ JanusMatrixVisualization.prototype.addInteraction = function(interaction) {
     }
 };
 
+/**
+ * Updates the vizualization
+ */ 
 JanusMatrixVisualization.prototype.update = function() {
     var nodes = this.graph.nodes;
     var n = nodes.length;
@@ -168,6 +174,9 @@ JanusMatrixVisualization.prototype.update = function() {
     }
 };
 
+/**
+ * Creates the svg and intialize it
+ */
 JanusMatrixVisualization.prototype.build = function() {
     var margin = {top: 300, right: 0, bottom: 10, left: 300};
 
