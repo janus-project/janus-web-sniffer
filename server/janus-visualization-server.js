@@ -1,7 +1,7 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
 var InteractionsTable = new Meteor.Collection("janus_event_visualization");
-//Interactions.remove({});
-//InteractionsTable.remove({});
+Interactions.remove({});
+InteractionsTable.remove({});
 
 function debuildFilterableHeader(header) {
     return header.slice(4, header.length);
