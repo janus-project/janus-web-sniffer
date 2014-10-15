@@ -11,6 +11,7 @@ To use the sniffer you will need.
 * Npm (https://github.com/npm/npm)
 * ZeroMQ-node (http://zeromq.org/bindings:node-js and https://github.com/JustinTulloss/zeromq.node)
 * MongoDB
+* jQuery
 
 
 Install Node.js, Npm and ZeroMQ-node.js
@@ -55,6 +56,10 @@ $ npm install zmq
 $ sudo ldconfig
 ```
 
+### jQuery
+```bash
+$ npm install jquery
+```
 
 ### Npm In meteor
 

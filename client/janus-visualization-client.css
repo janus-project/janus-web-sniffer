@@ -1,0 +1,92 @@
+.display_visu {
+  font: 25px sans-serif;
+}
+
+.display_visu:hover {
+  text-decoration:none;
+}
+
+/* svg css */
+
+text {
+  font-size: 11px;
+  pointer-events: none;
+}
+
+/* janus tree visualization css */
+
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.node {
+  font: 10px sans-serif;
+}
+
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+.node rect {
+  fill: #eee;
+  stroke: #ccc;
+  stroke-width: 1.5px;
+}
+
+/* janus matrix visualization css */
+
+.background {
+  fill: #000;
+}
+
+line {
+  stroke: #111;
+}
+
+text.active {
+  fill: steelblue;
+}
+
+/* janus circle pack visualization css */
+
+text.parent {
+  fill: #000;
+}
+
+circle {
+  fill: #ccc;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+}
+
+circle.parent:hover {
+  stroke: #000;
+  stroke-width: .5px;
+}
+
+circle.child {
+  pointer-events: none;
+}
+
+/* jauns matrix hover messages */
+.hovermessage {
+  background-color: #eee; 
+  padding: 0px;
+  border-color: #ccc;
+  border-style: solid;
+  border-width: 2px;
+  position: absolute;
+  padding-left: 5px;
+  color: #000;
+  font-size: 11px;
+}
+
+
