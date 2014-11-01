@@ -1,5 +1,5 @@
 Janus web sniffer Demo
-=================
+======================
 
 Requirements
 ------------
@@ -13,65 +13,33 @@ To use the sniffer you will need.
 * MongoDB
 * jQuery
 
+All these dependencies can be installed as explain below.
 
-Install Node.js, Npm and ZeroMQ-node.js
----------------------------------------
+Installation
+------------
 
 The following intructions can be used in Ubuntu to setup the necessary dependencies.
-
-### Node.js
 
 ```bash
 $ sudo apt-get update
 $ sudo apt-get install git-core curl build-essential openssl libssl-dev
-$ git clone https://github.com/joyent/node.git
-$ cd node
-$ git tag # Gives you a list of released versions
-$ git checkout v0.10.25
-$ ./configure
-$ make
-$ sudo make install
 ```
 
-### Npm
-
+Then, simply type
 ```bash
-$ curl https://npmjs.org/install.sh | sudo sh
+./install.sh
 ```
 
-###Install ZeroMQ Libs
+Launch
+------
 
-Download sources from http://zeromq.org/intro:get-the-software
-
+Don't forget to set the correct port to listen in
+server/janus-visualisation-server.js, start mongodb demon and type
 ```bash
-$ cd zeromq-3.2.4/
-$ ./configure && make
-$ sudo make install
+./start.sh
 ```
 
-### ZeroMQ-node
-
-```bash
-$ npm install zmq
-$ sudo ldconfig
-```
-
-### jQuery
-```bash
-$ npm install jquery
-```
-
-### Npm In meteor
-
-https://github.com/arunoda/meteor-npm
-
-```bash
-$ npm install -g meteor-npm #single time operation
-$ meteor-npm #type inside your project
-```
-
-
-### If your are behide a proxy
+### If your are behind a proxy
 ```bash
 $ npm config set proxy http://proxy.company.com:8080
 $ npm config set https-proxy http://proxy.company.com:8080

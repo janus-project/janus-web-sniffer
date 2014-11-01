@@ -1,0 +1,19 @@
+{
+	"name": "janus-web-sniffer",
+	"version": "0.0.1",
+	"description": "A web sniffer for the Janus platform",
+	"url": "http://github.com/janus-project/janus-web-sniffer",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/janus-project/janus-web-sniffer.git"
+	},
+	"dependencies" : {
+		"zmq" : "2.6.0" ,
+		"cryptojs": "2.5.3",
+		"jquery": "2.1.1",
+		"meteor-npm": "0.1.11"
+	},
+	"engineStrict": true,
+	"engines": { "node": "0.10.x" }
+}
+
