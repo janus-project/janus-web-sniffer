@@ -49,7 +49,7 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
  * Update the d3 visualization
  */
 JanusTreeMapVisualization.prototype.update = function() {
-    if(this.tree.root != null) {      
+    if(this.tree.root != null && this.tree.root.depth == 0) {      
       var grandparent = this.svg.append("g")
         .attr("class", "grandparent");
       
@@ -62,8 +62,8 @@ JanusTreeMapVisualization.prototype.update = function() {
         .attr("y", 6)
         .attr("dy", ".75em")
         .text(this.tree.root.name);
-    }
-    
+    }   
+    console.log(this);
 };
 
 /**
