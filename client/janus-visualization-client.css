@@ -89,4 +89,18 @@ circle.child {
   font-size: 11px;
 }
 
+/* bordel */
+rect.parent,
+.grandparent rect {
+  stroke-width: 2px;
+}
+
+.grandparent rect {
+  fill: orange;
+}
+
+.grandparent:hover rect {
+  fill: #ee9700;
+}
+
 

@@ -1,7 +1,7 @@
 var Interactions = new Meteor.Collection("janus_event_dispatches");
 var InteractionsTable = new Meteor.Collection("janus_event_visualization");
-Interactions.remove({});
-InteractionsTable.remove({});
+//Interactions.remove({});
+//InteractionsTable.remove({});
 
 function debuildFilterableHeader(header) {
     return header.slice(4, header.length);
@@ -66,7 +66,7 @@ bound_handle_message = Meteor.bindEnvironment(handle_event_envelope, function(e)
 });
 
 Meteor.startup(function () {
-    var janus_uri = "tcp://127.0.0.1:19118";
+    var janus_uri = "tcp://192.168.1.42:19118";
 
     var zmq = Meteor.require("zmq");
     var sock = zmq.socket("sub");
