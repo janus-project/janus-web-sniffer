@@ -37,7 +37,26 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                     // add root
                     var node = new TreeNode(msg.parentContextID, message);
                     this.tree.addNode(node, null);
+
+                    if(this.tree.getMaxDepth() == 0)
+                    {   
+                        var grandparent = this.svg.append("g")
+                        .attr("class", "grandparent");
+                    
+                        grandparent.append("rect")
+                                .attr("x", 10)
+                                .attr("y", 10)
+                                .attr("width", this.width)
+                                .attr("height", 20);   
+
+                        grandparent.append("text")
+                            .attr("x", 16)
+                            .attr("y", 16)
+                            .attr("dy", ".75em")
+                            .text(this.tree.root.message[2]);  
+                    }
                 } 
+
                 var node = new TreeNode(msg.agentID, message);
                 this.tree.addNode(node, msg.parentContextID);
             }
@@ -49,21 +68,10 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
  * Update the d3 visualization
  */
 JanusTreeMapVisualization.prototype.update = function() {
-    if(this.tree.root != null && this.tree.root.depth == 0) {      
-      var grandparent = this.svg.append("g")
-        .attr("class", "grandparent");
-      
-      grandparent.append("rect")
-        .attr("width", this.width)
-        .attr("height", 20);
-
-      grandparent.append("text")
-        .attr("x", 6)
-        .attr("y", 6)
-        .attr("dy", ".75em")
-        .text(this.tree.root.name);
-    }   
-    console.log(this);
+    if(this.tree.root != null) {
+        var jtm = this;
+        var left_margin;
+    }
 };
 
 /**
@@ -80,7 +88,7 @@ JanusTreeMapVisualization.prototype.build = function() {
         .children(function(d, depth) { return depth ? null : d._children; })
         .sort(function(a, b) { return a.value - b.value; })
         .ratio(this.height / this.width * svgWidthScale * (1 + Math.sqrt(5)))
-        .round(false);
+        .round(false);        
 };
 
 JanusTreeMapVisualization.prototype.displayMessage = function(id, visible) {
