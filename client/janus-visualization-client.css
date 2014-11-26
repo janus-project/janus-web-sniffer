@@ -89,7 +89,22 @@ circle.child {
   font-size: 11px;
 }
 
-/* bordel */
+/* janus treemap visu */
+text {
+pointer-events: none;
+}
+
+.grandparent text { /* header text */
+  font-weight: bold;
+  font-size: medium;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif; 
+}
+
+rect {
+  fill: none;
+  stroke: #fff;
+}
+
 rect.parent,
 .grandparent rect {
   stroke-width: 2px;
@@ -99,8 +114,29 @@ rect.parent,
   fill: orange;
 }
 
-.grandparent:hover rect {
-  fill: #ee9700;
+.treemapnode rect{
+  fill: #aaa;
+  width: 50px;
+  height: 80px;
 }
 
+.children rect.parent,
+.grandparent rect {
+cursor: pointer;
+}
+
+rect.parent {
+  pointer-events: all; 
+}
+
+.children:hover rect.child,
+.grandparent:hover rect {
+fill: #aaa;
+}
+
+.textdiv { /* text in the boxes */
+  font-size: medium;
+  padding: 5px;
+  font-family: "Open Sans", Helvetica, Arial, sans-serif; 
+}
 

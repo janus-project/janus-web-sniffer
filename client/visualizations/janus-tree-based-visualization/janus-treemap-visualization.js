@@ -1,10 +1,14 @@
 JanusTreeMapVisualization = function(id) {
     this.id = id;
+    this.tree = new Tree();
+    this.grandparent;
+
     this.body_messages = [];
     this.header_messages = [];
-    this.tree = new Tree();
+    
     this.width = 1000;
     this.height = 600;
+
     this.treemaplayout = {};
     this.svg = {};
     this.lastMaxDepth = 0;
@@ -15,7 +19,7 @@ JanusTreeMapVisualization = function(id) {
  *  interaction is the interaction to add
  */ 
 JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
-  var headers, msg;
+    var headers, msg;
  
     headers = JSON.parse(interaction.headers);
     this.header_messages.push(headers);
@@ -39,29 +43,22 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                     this.tree.addNode(node, null);
 
                     if(this.tree.getMaxDepth() == 0)
-                    {   
-                        var grandparent = this.svg.append("g")
-                        .attr("class", "grandparent");
-                    
-                        grandparent.append("rect")
-                                .attr("x", 10)
-                                .attr("y", 10)
-                                .attr("width", this.width)
-                                .attr("height", 20);   
-
-                        grandparent.append("text")
-                            .attr("x", 16)
-                            .attr("y", 16)
-                            .attr("dy", ".75em")
-                            .text(this.tree.root.message[2]);  
+                    {  
+                         // GrandParent
+                         this.grandparent.append("text")
+                         .attr("x", 14)
+                         .attr("y", 14)
+                         .attr("dy", ".75em")
+                         .text(msg.agentType.split(/[.]+/).pop());
                     }
                 } 
-
                 var node = new TreeNode(msg.agentID, message);
                 this.tree.addNode(node, msg.parentContextID);
+
+                
             }
         }
-    }
+    }           
 };
 
 /** 
@@ -70,7 +67,36 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
 JanusTreeMapVisualization.prototype.update = function() {
     if(this.tree.root != null) {
         var jtm = this;
-        var left_margin;
+        var left_margin = 280;
+        var padding_y = 0.5;
+        var nodes = this.treemaplayout.nodes(this.tree.root),
+            links = this.treemaplayout.links(nodes);
+
+        var node = this.svg.selectAll("g.node")
+            .data(nodes)
+            .enter().append("g")
+            .attr("class", "treemapnode");
+
+        node.append("rect")
+            .attr("x", 1)
+            .attr("y", 30)
+            .attr("height", 80)
+            .attr("width", 300)
+            .attr("rx", 10)
+            .attr("ry", 10)
+            .attr("class", function(d) { return Utils.packJanusId(d.name); })
+
+        var lineHeight = 15;
+        var paddingRight = -20;
+        node.append("text")
+            .attr("dx", paddingRight) 
+            .attr("dy", 2 * lineHeight)
+            .text(this.tree.root.message[3]);
+
+        console.log(this.tree.root.message[3]);
+               
+
+
     }
 };
 
@@ -88,7 +114,18 @@ JanusTreeMapVisualization.prototype.build = function() {
         .children(function(d, depth) { return depth ? null : d._children; })
         .sort(function(a, b) { return a.value - b.value; })
         .ratio(this.height / this.width * svgWidthScale * (1 + Math.sqrt(5)))
-        .round(false);        
+        .round(false);    
+
+    this.grandparent = this.svg.append("g")
+        .attr("class", "grandparent");
+
+    this.grandparent.append("rect")
+        .attr("y", 10)
+        .attr("width", this.width)
+        .attr("height", 20);
+    
+
+
 };
 
 JanusTreeMapVisualization.prototype.displayMessage = function(id, visible) {

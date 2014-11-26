@@ -40,6 +40,7 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
                 this.tree.addNode(node, msg.parentContextID);
             }
         }
+       //console.log(this.tree);
     }
 };
 
