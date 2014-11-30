@@ -62,7 +62,7 @@ JanusTreeVisualization.prototype.update = function() {
                 var dy = left_margin + d.y * padding_y;
                 return [dy, d.x]; 
             });
-     
+
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
         d3.selectAll(this.id + " g.node").remove();
         d3.selectAll(this.id + " path.link").remove();

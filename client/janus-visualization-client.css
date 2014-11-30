@@ -90,6 +90,12 @@ circle.child {
 }
 
 /* janus treemap visu */
+
+#janus-treemap-visualization
+{
+  border: 1px solid orange;
+}
+
 text {
 pointer-events: none;
 }
@@ -107,6 +113,7 @@ rect {
 
 rect.parent,
 .grandparent rect {
+  position: absolute;
   stroke-width: 2px;
 }
 
@@ -115,9 +122,8 @@ rect.parent,
 }
 
 .treemapnode rect{
+  position: absolute;
   fill: #aaa;
-  width: 50px;
-  height: 80px;
 }
 
 .children rect.parent,

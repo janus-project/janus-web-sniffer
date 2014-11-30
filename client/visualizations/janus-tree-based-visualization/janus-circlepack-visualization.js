@@ -40,7 +40,7 @@ JanusCirclePackVisualization.prototype.addInteraction = function(interaction) {
                 this.tree.addNode(node, msg.parentContextID);
             }
         }
-       //console.log(this.tree);
+    
     }
 };
 
@@ -54,6 +54,8 @@ JanusCirclePackVisualization.prototype.update = function() {
 
 		var nodes = this.pack.nodes(this.tree.root);
 
+		
+		
 	    d3.selectAll(this.id + " text").remove();
 	    d3.selectAll(this.id + " circle").remove();
 

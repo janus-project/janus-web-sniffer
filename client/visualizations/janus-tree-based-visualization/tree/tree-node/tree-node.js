@@ -8,6 +8,7 @@ TreeNode = function(name, message) {
     this.name = name;
     this.children = [];
     this.depth = 0;
+    this.count = 1;
 };
 
 /**
@@ -28,3 +29,13 @@ TreeNode.prototype.visit = function(predicat, params, action, actionParams, dept
     }
     return false;
 };
+
+TreeNode.prototype.NextGenCount = function() {
+    var agr = 0;
+    for(var i in this.children) {
+        var child = this.children[i];
+        agr += child.count;
+    }
+
+    return agr;
+}
