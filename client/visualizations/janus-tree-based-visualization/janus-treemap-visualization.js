@@ -39,13 +39,8 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
     if(headers && msg) {
          if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID && msg.parentContextID) {
-                var message = [];
-
-                // add additionnal informations here
-                message.push("agent type : " + msg.agentType); 
-                message.push("space id : " + msg.source.spaceId.id);
-                message.push("context id : " + msg.source.spaceId.contextID);
-
+                var tcontext = "context";
+                var tspace = "space";
 
                 if(this.tree.nodeCount == 0) {
                     // add root
@@ -64,13 +59,12 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                     }
                 } 
 
-                var contextnode = new TreeNode(msg.source.spaceId.contextID, message);
+                var contextnode = new TreeNode(msg.source.spaceId.contextID, tcontext);
                 this.tree.addMapNode(contextnode, "Treemap");
 
-                var spaceNode = new TreeNode(msg.source.spaceId.id);
-                this.tree.addMapNode(spaceNode, msg.source.spaceId.contextID);
-
-                console.log(this.tree.root.NextGenCount());
+                /* Not for the moment 
+                var spaceNode = new TreeNode(msg.source.spaceId.id, tspace);
+                this.tree.addMapNode(spaceNode, msg.source.spaceId.contextID);*/
             }       
          }  
     }
@@ -85,43 +79,32 @@ JanusTreeMapVisualization.prototype.update = function() {
         var jtm = this;
         var left_margin = 280;
         var padding_y = 0.5;
-        var nodes = this.treemaplayout.nodes(this.tree.root),
-            links = this.treemaplayout.links(nodes);
+        var nodes = this.treemaplayout.nodes(this.tree.root);
+
+       // console.log(nodes);
+
 
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
         d3.selectAll(this.id + " g.node").remove();
         d3.selectAll(this.id + " path.link").remove();
 
-        var node = this.svg.selectAll("g.node")
+        var node = this.svg.selectAll("g.treemapnode")
             .data(nodes)
             .enter().append("g")
             .attr("class", "treemapnode");
 
         node.append("rect")
-            .attr("x", 0)
-            .attr("y",20)
-            .attr("height", 80)
-            .attr("width", 150);
+            .call(position);
 
-        /* This is how you do it */
-        /*   .each(function(d) { console.log(d.message[2]); });*/
-        console.log("\n");
-        var lineHeight = 22;
-        var paddingRight = 20;
-        node.append("text")
-            .attr("dx", paddingRight) 
-            .attr("dy", 2 * lineHeight)
-            .text(function(d) { 
-               // if(d.depth == 1) { console.log(d.name + " " + d.count +  " " + d.depth); }
-             return d.name; }); 
+        
             
     }
 
-    function rect(rect) {
-    rect.attr("x", function(d) { return x(d.x); })
-        .attr("y", function(d) { return y(d.y); })
-        .attr("width", function(d) { return x(d.x + d.dx) - x(d.x); })
-        .attr("height", function(d) { return y(d.y + d.dy) - y(d.y); });
+    function position() {
+      this.attr("x", function(d) { return d.x + "px"; })
+          .attr("y", function(d) { return d.y + "px"; })
+          .attr("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
+          .attr("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
     }
 
 };
@@ -130,34 +113,25 @@ JanusTreeMapVisualization.prototype.update = function() {
  * Constructs the svg and the layout of this visualization
  */
 JanusTreeMapVisualization.prototype.build = function() {
-    var svgWidthScale = 1.6;
-    var treeLayoutScale = 2.6;
+   /* var svgWidthScale = 1.6;
+    var treeLayoutScale = 2.6; */
     
     /* Physical Appearance */
     this.margin = {top: 20, right: 0, bottom: 0, left: 0};
-    this.width = 960;
+    this.width = 1000;
     this.height = 500 - this.margin.top - this.margin.bottom,
 
     /* Format */
     this.formatNumber = d3.format(",d");
 
-    /* Position */
-    this.x = d3.scale.linear()
-        .domain([0, this.width])
-        .range([0, this.width]);
-
-    this.y = d3.scale.linear()
-        .domain([0, this.height])
-        .range([0, this.height]);
-
     /* Actual Layout */
     this.treemaplayout = d3.layout.treemap()
-        this.treelayout = d3.layout.tree()
-        .size([this.height, this.width * treeLayoutScale]);
+        .size([this.height, this.width])
+        .value(function(d) { return d.count; });
 
     /* Drawing */
     this.svg = d3.select(this.id)
-        .attr("width", this.width * svgWidthScale)
+        .attr("width", this.width)
         .attr("height", this.height);
 
     /* Top Label */
