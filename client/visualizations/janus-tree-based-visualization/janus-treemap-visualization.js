@@ -126,7 +126,7 @@ JanusTreeMapVisualization.prototype.build = function() {
 
     /* Actual Layout */
     this.treemaplayout = d3.layout.treemap()
-        .size([this.height, this.width])
+        .size([this.width, this.height])
         .value(function(d) { return d.count; });
 
     /* Drawing */
