@@ -166,9 +166,9 @@ JanusTreeMapVisualization.prototype.display = function(d) {
 
     this.grandparent
         .datum(d.parent)
-        .on("click", this.transition)
+        .on("click", transition)
       .select("text")
-        .text(d.name);
+        .text(name(d));
 
     var g1 = this.svg.insert("g", ".grandparent")
         .datum(d)
@@ -194,16 +194,14 @@ JanusTreeMapVisualization.prototype.display = function(d) {
       .append("title")
         .text(function(d) { return self.formatNumber(d.value); });
 
-     
-
     g.append("text")
         .attr("dy", ".75em")
         .text(function(d) { return d.name; })
         .call(text);
 
     function transition(d) {
-      if (this.transitioning || !d) return;
-      this.transitioning = true;
+      if (self.transitioning || !d) return;
+      self.transitioning = true;
 
       var g2 = self.display(d),
           t1 = g1.transition().duration(750),
