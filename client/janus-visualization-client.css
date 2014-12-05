@@ -93,17 +93,15 @@ circle.child {
 
 #janus-treemap-visualization svg
 {
-  border: 1px solid orange;
+  border: 1px solid #aaa;
 }
 
 text {
-pointer-events: none;
+  pointer-events: none;
 }
 
-.grandparent text { /* header text */
+.grandparent text {
   font-weight: bold;
-  font-size: medium;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif; 
 }
 
 rect {
@@ -113,7 +111,6 @@ rect {
 
 rect.parent,
 .grandparent rect {
-  position: absolute;
   stroke-width: 2px;
 }
 
@@ -121,28 +118,21 @@ rect.parent,
   fill: orange;
 }
 
-.treemapnode rect{
-  position: absolute;
-  fill: #aaa;
+.grandparent:hover rect {
+  fill: #ee9700;
 }
 
 .children rect.parent,
 .grandparent rect {
-cursor: pointer;
+  cursor: pointer;
 }
 
-rect.parent {
-  pointer-events: all; 
+.children rect.parent {
+  fill: #bbb;
+  fill-opacity: .5;
 }
 
-.children:hover rect.child,
-.grandparent:hover rect {
-fill: #aaa;
-}
-
-.textdiv { /* text in the boxes */
-  font-size: medium;
-  padding: 5px;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif; 
+.children:hover rect.child {
+  fill: #bbb;
 }
 
