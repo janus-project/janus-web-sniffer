@@ -251,6 +251,7 @@ JanusTreeMapVisualization.prototype.build = function() {
         .round(false)
         .value(function(d) { return d.count; })
         .sort(function(a, b) { return a.value - b.value; });
+ 
 
     /* SVG */
     this.svg = d3.select(this.id)
