@@ -235,7 +235,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
         .attr("class", "parent")
         .call(rect)
       .append("title")
-        .text(function(d) { return self.formatNumber(d.value); });
+        .text(function(d) { return "(" + self.formatNumber(d.value) + ")   " + d.name; });
 
     g.append("text")
         .attr("dy", ".75em")
