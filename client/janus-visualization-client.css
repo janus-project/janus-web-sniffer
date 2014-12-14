@@ -91,9 +91,9 @@ circle.child {
 
 /* janus treemap visu */
 
-#janus-treemap-visualization svg
+#janus-treemap-visualization  
 {
-  border: 1px solid #aaa;
+  margin: 20px 0 0 4px;
 }
 
 text {

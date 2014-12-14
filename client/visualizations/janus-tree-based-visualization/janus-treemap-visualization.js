@@ -55,15 +55,6 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                     // add root
                     var node = new TreeNode("Treemap","");
                     this.tree.addMapNode(node, null);
-
-                    /*
-                    if(this.tree.getMaxDepth() == 0)
-                    {  
-                         // GrandParent
-                         this.grandparent.append("text")
-                         .text(msg.agentType.split(/[.]+/).pop());
-                    }
-                    */
                 } 
 
                 var contextnode = new TreeNode(msg.source.spaceId.contextID, tcontext);
@@ -90,15 +81,18 @@ JanusTreeMapVisualization.prototype.update = function() {
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
         d3.selectAll(this.id + " g.node").remove();
         d3.selectAll(this.id + " g.depth").remove();
-        //d3.selectAll(this.id + " g").remove();
 
         initialize(this.tree.root, this.width, this.height);
         accumulate(this.tree.root);
         this.layout(this.tree.root);
-        this.display(this.tree.root); 
+        this.display(this.tree.root);
 
-      
     }
+
+    
+
+
+    
 
     function initialize(root, width, height) {
         root.x = root.y = 0;
@@ -145,6 +139,21 @@ JanusTreeMapVisualization.prototype.layout = function(d) {
 JanusTreeMapVisualization.prototype.display = function(d) {
     var self = this;
     
+     function fontSize(d,i) {
+      var size = d.dx/5;
+      var words = d.name.split('-');
+      var word = words[0];
+      var width = d.dx;
+      var height = d.dy;
+      var length = 0;
+      d3.select(this).style("font-size", size + "px").text(word);
+      while(((this.getBBox().width >= width) || (this.getBBox().height >= height)) && (size > 12))
+       {
+        size--;
+        d3.select(this).style("font-size", size + "px");
+        this.firstChild.name = word;
+       }
+    } 
 
     function text(text) {
       text.attr("x", function(d) { return self.x(d.x) + 6; })
@@ -162,6 +171,40 @@ JanusTreeMapVisualization.prototype.display = function(d) {
       return d.parent
           ? name(d.parent) + "." + d.name
           : d.name;
+    }
+
+    function transition(d) {
+      if (self.transitioning || !d) return;
+      self.transitioning = true;
+
+      var g2 = self.display(d),
+          t1 = g1.transition().duration(750),
+          t2 = g2.transition().duration(750);
+
+      // Update the domain only after entering new elements.
+      self.x.domain([d.x, d.x + d.dx]);
+      self.y.domain([d.y, d.y + d.dy]);
+
+      // Enable anti-aliasing during the transition.
+      self.svg.style("shape-rendering", null);
+
+      // Draw child nodes on top of parent nodes.
+      self.svg.selectAll(".depth").sort(function(a, b) { return a.depth - b.depth; });
+
+      // Fade-in entering text.
+      g2.selectAll("text").style("fill-opacity", 0);
+
+      // Transition to the new view.
+      t1.selectAll("text").call(text).style("fill-opacity", 0);
+      t2.selectAll("text").call(text).style("fill-opacity", 1);
+      t1.selectAll("rect").call(rect);
+      t2.selectAll("rect").call(rect);
+
+      // Remove the old node when the transition is finished.
+      t1.remove().each("end", function() {
+        self.svg.style("shape-rendering", "crispEdges");
+        self.transitioning = false;
+      });
     }
 
     this.grandparent
@@ -197,41 +240,10 @@ JanusTreeMapVisualization.prototype.display = function(d) {
     g.append("text")
         .attr("dy", ".75em")
         .text(function(d) { return d.name; })
-        .call(text);
+        .call(text)
+        .each(fontSize);
 
-    function transition(d) {
-      if (self.transitioning || !d) return;
-      self.transitioning = true;
-
-      var g2 = self.display(d),
-          t1 = g1.transition().duration(750),
-          t2 = g2.transition().duration(750);
-
-      // Update the domain only after entering new elements.
-      self.x.domain([d.x, d.x + d.dx]);
-      self.y.domain([d.y, d.y + d.dy]);
-
-      // Enable anti-aliasing during the transition.
-      self.svg.style("shape-rendering", null);
-
-      // Draw child nodes on top of parent nodes.
-      self.svg.selectAll(".depth").sort(function(a, b) { return a.depth - b.depth; });
-
-      // Fade-in entering text.
-      g2.selectAll("text").style("fill-opacity", 0);
-
-      // Transition to the new view.
-      t1.selectAll("text").call(text).style("fill-opacity", 0);
-      t2.selectAll("text").call(text).style("fill-opacity", 1);
-      t1.selectAll("rect").call(rect);
-      t2.selectAll("rect").call(rect);
-
-      // Remove the old node when the transition is finished.
-      t1.remove().each("end", function() {
-        self.svg.style("shape-rendering", "crispEdges");
-        self.transitioning = false;
-      });
-    }
+    
 
     return g;
   
