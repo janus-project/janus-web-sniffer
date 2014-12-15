@@ -50,6 +50,7 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
             if(msg.agentID && msg.parentContextID) {
                 var tcontext = "context";
                 var tspace = "space";
+                var tagent = "agent"
 
                 if(this.tree.nodeCount == 0) {
                     // add root
@@ -57,14 +58,25 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                     this.tree.addMapNode(node, null);
                 } 
 
-                var contextnode = new TreeNode(msg.source.spaceId.contextID, tcontext);
-                this.tree.addMapNode(contextnode, "Treemap");
+                if(msg.agentID != msg.parentContextID)
+                { 
+                  /* add context as root child */
+                  var contextnode = new TreeNode(msg.source.spaceId.contextID, tcontext);
+                  this.tree.addMapNode(contextnode, "Treemap");
 
-                /* Not for the moment */
-                var spaceNode = new TreeNode(msg.source.spaceId.id, tspace);
-                this.tree.addMapNode(spaceNode, msg.source.spaceId.contextID); 
-            }       
-         }  
+                  /* add space as context child */
+                  var spaceNode = new TreeNode(msg.source.spaceId.id, tspace);
+                  this.tree.addMapNode(spaceNode, msg.source.spaceId.contextID); 
+
+                  /* add agent as space child */
+                  var agentNode = new TreeNode(msg.agentID, tagent);
+                  this.tree.addMapNode(agentNode, msg.source.spaceId.id);
+                }
+
+                /* debug */
+                console.log("\n" + msg.parentContextID + "\n" + msg.source.spaceId.id + "\n" + msg.agentID);
+            }         
+         }     
     }
 };
 
@@ -76,8 +88,6 @@ JanusTreeMapVisualization.prototype.update = function() {
     if(this.tree.root != null) {          
         var jtm = this;
 
-     
-
         //Test if the removal of only modified element is better than removing everything and redrawing the whole hierarchy
         d3.selectAll(this.id + " g.node").remove();
         d3.selectAll(this.id + " g.depth").remove();
@@ -86,13 +96,7 @@ JanusTreeMapVisualization.prototype.update = function() {
         accumulate(this.tree.root);
         this.layout(this.tree.root);
         this.display(this.tree.root);
-
     }
-
-    
-
-
-    
 
     function initialize(root, width, height) {
         root.x = root.y = 0;
@@ -110,8 +114,6 @@ JanusTreeMapVisualization.prototype.update = function() {
           ? d.value = d.children.reduce(function(p, v) { return p + accumulate(v); }, 0)
           : d.value;
     }
-
-     
 };
 
 /** 
@@ -138,7 +140,7 @@ JanusTreeMapVisualization.prototype.layout = function(d) {
  */
 JanusTreeMapVisualization.prototype.display = function(d) {
     var self = this;
-    
+
      function fontSize(d,i) {
       var size = d.dx/5;
       var words = d.name.split('-');
@@ -235,7 +237,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
         .attr("class", "parent")
         .call(rect)
       .append("title")
-        .text(function(d) { return "(" + self.formatNumber(d.value) + ")   " + d.name; });
+        .text(function(d) { console.log(d); return d.message + " (" + self.formatNumber(d.value) + ")   " + d.name; });
 
     g.append("text")
         .attr("dy", ".75em")
@@ -243,10 +245,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
         .call(text)
         .each(fontSize);
 
-    
-
     return g;
-  
 }
 
 /**
@@ -273,7 +272,7 @@ JanusTreeMapVisualization.prototype.build = function() {
         .attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")")
         .style("shape-rendering", "crispEdges");
 
-    /* Top Bar */
+    /* Top Orange Bar */
     this.grandparent = this.svg.append("g")
     .attr("class", "grandparent");
 
@@ -286,7 +285,6 @@ JanusTreeMapVisualization.prototype.build = function() {
         .attr("x", 6)
         .attr("y", 6 - this.margin.top)
         .attr("dy", ".75em");
-
 };
 
 JanusTreeMapVisualization.prototype.displayMessage = function(id, visible) {
