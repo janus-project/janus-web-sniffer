@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# Select packet manager based on distribution used
+OS=`uname -s`
+
+if [ "${OS}" = "Linux" ] ; then
+        KERNEL=`uname -r`
+        if [ -f /etc/redhat-release ] ; then
+                DIST='RedHat'
+                INSTALL='rpm -i'
+        elif [ -f /etc/debian_version ] ; then
+                DIST='Debian'
+                INSTALL='apt-get install'
+        fi
+else
+	echo "Distribution not supported, please install manually"
+	exit 0
+fi
+
 # Node installation
 if [[ -z `which node` ]]; then
 	git clone https://github.com/joyent/node.git
@@ -23,8 +40,7 @@ fi
 
 # MongoDB
 if [[ -z `which mongod` ]]; then
-	sudo apt-get update
-	sudo apt-get install mongodb
+    ${INSTALL} mongodb-org
 	sudo mkdir /data/db
 fi
 
