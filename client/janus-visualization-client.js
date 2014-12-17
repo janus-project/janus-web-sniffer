@@ -61,6 +61,8 @@ $(document).ready(function(){
     $('#janus-matrix-visualization').hide();
     $('#janus-circle-pack-visualization').hide();
     $('#janus-treemap-visualization').hide();
+    $('#legend').hide();
+    $('#button').hide();
 
     $(function() {
        $('#display_tree').click(function() {
@@ -86,6 +88,8 @@ $(document).ready(function(){
     $(function() {
        $('#display_treemap').click(function() {
            display('#janus-treemap-visualization');
+           display('#legend');
+           display('#button');
            return false;
        });        
    });

@@ -74,7 +74,7 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                 }
 
                 /* debug */
-                console.log("\n" + msg.parentContextID + "\n" + msg.source.spaceId.id + "\n" + msg.agentID);
+               // console.log("\n" + msg.parentContextID + "\n" + msg.source.spaceId.id + "\n" + msg.agentID);
             }         
          }     
     }
@@ -142,7 +142,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
     var self = this;
 
      function fontSize(d,i) {
-      var size = d.dx/5;
+      var size = d.dx/8;
       var words = d.name.split('-');
       var word = words[0];
       var width = d.dx;
@@ -159,7 +159,19 @@ JanusTreeMapVisualization.prototype.display = function(d) {
 
     function text(text) {
       text.attr("x", function(d) { return self.x(d.x) + 6; })
-        .attr("y", function(d) { return self.y(d.y) + 6; });
+        .attr("y", function(d) { return self.y(d.y) + 6; })
+        .attr("fill", function(d) { 
+          /* Color code */
+          if(d.message == "context") {
+            return "#708090";
+          }
+          else if (d.message == "space") {
+            return "#CB4D39";
+          }
+          else if (d.message == "agent") {
+
+          }return "#26A21D";
+        });
     }
 
     function rect(rect) {
@@ -175,6 +187,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
           : d.name;
     }
 
+  
     function transition(d) {
       if (self.transitioning || !d) return;
       self.transitioning = true;
@@ -237,7 +250,7 @@ JanusTreeMapVisualization.prototype.display = function(d) {
         .attr("class", "parent")
         .call(rect)
       .append("title")
-        .text(function(d) { console.log(d); return d.message + " (" + self.formatNumber(d.value) + ")   " + d.name; });
+        .text(function(d) { return d.message + " (" + self.formatNumber(d.value) + ")   " + d.name; });
 
     g.append("text")
         .attr("dy", ".75em")
