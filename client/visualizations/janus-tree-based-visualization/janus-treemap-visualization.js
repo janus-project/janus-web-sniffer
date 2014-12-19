@@ -45,8 +45,11 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
     msg = JSON.parse(interaction.body);
     this.body_messages.push(msg);
 
+    console.log(headers);
+    console.log(msg);
+    console.log("\n");
+    
     if(headers && msg) {
-         if(headers[janus_events["event-type"]] == janus_events["member-joined"]) {
             if(msg.agentID && msg.parentContextID) {
                 var tcontext = "context";
                 var tspace = "space";
@@ -71,13 +74,14 @@ JanusTreeMapVisualization.prototype.addInteraction = function(interaction) {
                   /* add agent as space child */
                   var agentNode = new TreeNode(msg.agentID, tagent);
                   this.tree.addMapNode(agentNode, msg.source.spaceId.id);
+
                 }
 
                 /* debug */
-               // console.log("\n" + msg.parentContextID + "\n" + msg.source.spaceId.id + "\n" + msg.agentID);
+                console.log("\n" + msg.parentContextID + "\n" + msg.source.spaceId.id + "\n" + msg.agentID);
             }         
-         }     
     }
+    
 };
 
 
@@ -250,7 +254,9 @@ JanusTreeMapVisualization.prototype.display = function(d) {
         .attr("class", "parent")
         .call(rect)
       .append("title")
-        .text(function(d) { return d.message + " (" + self.formatNumber(d.value) + ")   " + d.name; });
+        .text(function(d) { 
+          return d.message + " (" + self.formatNumber(d.value) + ")   " + d.name; 
+        });
 
     g.append("text")
         .attr("dy", ".75em")
