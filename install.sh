@@ -4,14 +4,17 @@
 OS=`uname -s`
 
 if [ "${OS}" = "Linux" ] ; then
-        KERNEL=`uname -r`
-        if [ -f /etc/redhat-release ] ; then
-                DIST='RedHat'
-                INSTALL='rpm -i'
-        elif [ -f /etc/debian_version ] ; then
-                DIST='Debian'
-                INSTALL='apt-get install'
-        fi
+    KERNEL=`uname -r`
+    if [ -f /etc/redhat-release ] ; then
+        DIST='RedHat'
+        INSTALL='sudo rpm -i'
+        ${INSTALL} git-core curl openssl libssl
+    elif [ -f /etc/debian_version ] ; then
+        DIST='Debian'
+        INSTALL='sudo apt-get install'
+        sudo apt-get update
+        ${INSTALL} git-core curl build-essential openssl libssl-dev
+    fi
 else
 	echo "Distribution not supported, please install manually"
 	exit 0

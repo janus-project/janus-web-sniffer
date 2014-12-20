@@ -18,14 +18,8 @@ All these dependencies can be installed as explain below.
 Installation
 ------------
 
-The following intructions can be used in Ubuntu to setup the necessary dependencies.
-
-```bash
-$ sudo apt-get update
-$ sudo apt-get install git-core curl build-essential openssl libssl-dev
-```
-
-Then, simply type
+To install the service, run the following script (supports Debian-like 
+distribution and rpm-based distribution)
 ```bash
 ./install.sh
 ```
