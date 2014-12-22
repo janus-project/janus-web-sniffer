@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta HTTP-EQUIV="X-UA-COMPATIBLE" CONTENT="IE=EmulateIE9" >
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+    <title>Political Influence Data Visualization D3.js</title>
+    <link type="text/css" rel="stylesheet" href="style.css">
+
+    <script type="text/javascript" src="scripts/d3/d3.js"></script>
+</head>
+<body>
+
+<div id="bpg" >
+
+    <!--[if IE 6]>
+    <div id="bpg-error">
+        <p>1 This interactive graphic requires a browser with SVG support, such as <a href="http://www.google.com/chrome">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/">Firefox</a>, <a href="http://www.apple.com/safari/download/">Safari</a> or the latest <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">Internet Explorer 9</a>. </p>
+        <img src="images/browserCheck.jpg" alt="Error">
+        <div id="bpg-chartFrame" style="display:none;">
+        </div>
+    <![endif]-->
+
+    <!--[if IE 7]>
+    <div id="bpg-error">
+        <p>2 This interactive graphic requires a browser with SVG support, such as <a href="http://www.google.com/chrome">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/">Firefox</a>, <a href="http://www.apple.com/safari/download/">Safari</a> or the latest <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">Internet Explorer 9</a>. </p>
+        <img src="images/browserCheck.jpg" alt="Error">
+        <div id="bpg-chartFrame" style="display:none;">
+
+    <![endif]-->
+
+    <!--[if IE 8]>
+    <div id="bpg-error">
+        <p>3 This interactive graphic requires a browser with SVG support, such as <a href="http://www.google.com/chrome">Chrome</a>, <a href="http://www.mozilla.org/en-US/firefox/">Firefox</a>, <a href="http://www.apple.com/safari/download/">Safari</a> or the latest <a href="http://windows.microsoft.com/en-US/internet-explorer/products/ie/home">Internet Explorer 9</a>. </p>
+        <img src="images/browserCheck.jpg" alt="Error">
+        <div id="bpg-chartFrame" style="display:none;">
+
+    <![endif]-->
+
+    <!--[if IE 9]>
+    <div id="bpg-chartFrame">
+    <![endif]-->
+
+    <!--[if !IE]>
+    <div id="bpg-chartFrame">
+    <![endif]-->
+
+    <div id="mainDiv">
+        <div id="svgDiv"></div>
+        <div id="headerRight" style="width:350px; right:20px;">
+            <div class="hint">
+                <div id="totalDiv" style="color: #000; font-size:22px; font-weight:bold; margin-top:5px; font-family: Georgia; font-style:italic">
+                    $0
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div id="toolTip" class="tooltip" style="width:250px; height:120px; position:absolute;s">
+        <div id="header1" class="header2"></div>
+        <div class="header-rule"></div>
+        <div id="head" class="header"></div>
+        <div class="header-rule"></div>
+        <div  id="header2" class="header3"></div>
+        <div  class="tooltipTail"></div>
+    </div>
+</div>
+
+<script type="text/javascript" src="scripts/app/globals.js"></script>
+<script type="text/javascript" src="scripts/app/events.js"></script>
+<script type="text/javascript" src="scripts/app/data.js"></script>
+<script type="text/javascript" src="scripts/app/_buildChords.js"></script>
+<script type="text/javascript" src="scripts/app/update.js"></script>
+<script type="text/javascript" src="scripts/app/main.js"></script>
+
+
+</body>
+</html>
