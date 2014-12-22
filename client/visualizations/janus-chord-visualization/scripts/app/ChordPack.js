@@ -1,4 +1,4 @@
-function ChordPack(contextId) {
+ChordPack = function (contextId) {
     this.id = contextId;
     
     // Chords array of spaceId
@@ -17,7 +17,7 @@ function ChordPack(contextId) {
  * return handled: bool true if handled else false
  */
 ChordPack.prototype.dispatchEvent = function(headers, msg) {
-    
+    console.log('dispatchEvent: ' + msg.source.agentId + ' | ' + msg.source.spaceId.id);
     // msg.source.spaceId.contextID : ÉMETTEUR DU MESSAGE
     // msg.source.agentId : RÉCÉPTEUR DU MESSAGE
     
@@ -29,21 +29,25 @@ ChordPack.prototype.dispatchEvent = function(headers, msg) {
         
         var chordExists = this.chords.indexOf(spaceId) != -1;
         if(!chordExists) {
+            console.log('::: addChord :::');
             this.chords.push(spaceId);
         }
         
-        var child = findChild(childId);
+        console.log('::: findChild :::');
+        var child = this.findChild(childId);
         if(child == null) {
-            child = addChild(childId);
+            console.log('::: addChild :::');
+            child = this.addChild(childId);
         }
         
-        this.links.addLink(child, spaceId);
+        console.log('::: addLink :::');
+        this.links.addLink(childId, spaceId);
         
         return true;
     } else {
         // hand over the event to children
-        for (var i = 0; i < children.length; i++) {
-            if (children[i].dispatchEvent(headers, msg)) {
+        for (var i = 0; i < this.children.length; i++) {
+            if (this.children[i].dispatchEvent(headers, msg)) {
                 return true;
             }
         }
@@ -86,3 +90,14 @@ ChordPack.prototype.removeChild = function (child) {
 ChordPack.prototype.update = function () {
     
 }
+
+ChordPack.prototype.toJSON = function () {
+    var obj = {
+        links:this.links,
+        children:this.children.map(function (el) {
+            return el.toJSON();
+        })
+    };
+
+    return obj;
+ }

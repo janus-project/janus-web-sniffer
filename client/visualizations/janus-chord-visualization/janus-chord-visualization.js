@@ -6,7 +6,7 @@ JanusChordVisualization = function(id) {
     this.inclusionLinks = [];
     this.chords  = [];
     
-    this.chordPack = new ChordPack();
+    this.chordPack;
     this.header_messages = [];
     this.body_messages = [];
     this.svg = {};
@@ -14,7 +14,7 @@ JanusChordVisualization = function(id) {
     this.width = 800,
     this.height = 800;
 };
-
+GG = null;
 /**
  * Adds an interaction : interaction is the interaction to add
  */ 
@@ -28,6 +28,12 @@ JanusChordVisualization.prototype.addInteraction = function(interaction) {
     this.body_messages.push(msg);
 
     if(msg) {
+
+        if (this.chordPack == null) {
+            this.chordPack = new ChordPack(msg.source.spaceId.contextID);
+            GG = this.chordPack;
+        }
+
         this.chordPack.dispatchEvent(headers, msg);
     }
 };

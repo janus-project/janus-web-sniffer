@@ -1,24 +1,26 @@
-function BiLink () {
+BiLink = function () {
     
-    var chords = {};
-    var children = {};
+    this.spaces = {};
+    this.children = {};
     
 }
 
-BiLink.prototype.addLink = function (child, chord) {
-    if (children[chord] == null)
-        children[chord] = [];
-    if (chords[child] == null)
-        chords[child] = [];
+BiLink.prototype.addLink = function (childId, spaceId) {
+    if (this.children[spaceId] == null) {
+        this.children[spaceId] = [];
+    }
+    if (this.spaces[childId] == null) {
+        this.spaces[childId] = [];
+    }
     
-    children[chord].push(child);
-    chords[child].push(chord);
+    this.children[spaceId].push(childId);
+    this.spaces[childId].push(spaceId);
 }
 
-BiLink.prototype.getChildren = function (chord) {
-    return children[chord];
+BiLink.prototype.getChildren = function (spaceId) {
+    return this.children[spaceId];
 }
 
-BiLink.prototype.getChords = function (child) {
-    return chords[child];
+BiLink.prototype.getSpaces = function (childId) {
+    return this.spaces[childId];
 }

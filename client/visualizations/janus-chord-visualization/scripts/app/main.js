@@ -1,4 +1,4 @@
-fetchData();
+// fetchData();
 
 var intervalId;
 var counter = 2;
