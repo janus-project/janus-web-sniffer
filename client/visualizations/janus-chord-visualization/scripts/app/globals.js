@@ -82,11 +82,8 @@ var linkGroup;
 var agents = [],
     spaces = [],
     inclusions = [],
-
     agentsModel = [],
-
     totalAgents = 0,
-
     spaceById = {},
     chordsById = {},
     nodesById = {},
