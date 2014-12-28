@@ -2,7 +2,7 @@ ChordPack = function (contextId) {
     this.id = contextId;
     
     // Chords array of spaceId
-    this.chords = [];
+    this.spaces = [];
     
     // Bubbles array of ChordPack
     this.children = [];
@@ -27,10 +27,10 @@ ChordPack.prototype.dispatchEvent = function(headers, msg) {
         var childId = msg.source.agentId;
         var spaceId = msg.source.spaceId.id;
         
-        var chordExists = this.chords.indexOf(spaceId) != -1;
+        var chordExists = this.spaces.indexOf(spaceId) != -1;
         if(!chordExists) {
             console.log('::: addChord :::');
-            this.chords.push(spaceId);
+            this.spaces.push(spaceId);
         }
         
         console.log('::: findChild :::');
@@ -88,6 +88,19 @@ ChordPack.prototype.removeChild = function (child) {
 }
 
 ChordPack.prototype.update = function () {
+    
+    updateNodes();
+    updateChords();
+    
+    // build a d3js root
+    var root = {
+        children: agentsModel
+    };
+
+    // populate bubble layout with root
+    nodes = bubble.nodes(root);
+
+    buildChords();
     
 }
 
