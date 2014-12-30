@@ -1,14 +1,14 @@
-ChordPack = function (contextId) {
+ChordPack = function(contextId) {
     this.id = contextId;
-    
+
     // Chords array of spaceId
     this.spaces = [];
-    
+
     // Bubbles array of ChordPack
     this.children = [];
-    
+
     this.links = new BiLink();
-}
+};
 
 /**
  * Try to handle the event given to us
@@ -17,34 +17,35 @@ ChordPack = function (contextId) {
  * return handled: bool true if handled else false
  */
 ChordPack.prototype.dispatchEvent = function(headers, msg) {
-    console.log('dispatchEvent: ' + msg.source.agentId + ' | ' + msg.source.spaceId.id);
+    // console.log('dispatchEvent: ' + msg.source.agentId + ' | ' + msg.source.spaceId.id);
     // msg.source.spaceId.contextID : ÉMETTEUR DU MESSAGE
     // msg.source.agentId : RÉCÉPTEUR DU MESSAGE
-    
+
     var mustHandle = (msg.source.spaceId.contextID == this.id);
-    
+
     if (mustHandle) {
-        var childId = msg.source.agentId;
-        var spaceId = msg.source.spaceId.id;
-        
-        var chordExists = this.spaces.indexOf(spaceId) != -1;
-        if(!chordExists) {
-            console.log('::: addChord :::');
-            this.spaces.push(spaceId);
+        var msgSenderId = msg.source.agentId;
+        var msgSpaceId = msg.source.spaceId.id;
+
+        var chordExists = this.spaces.indexOf(msgSpaceId) != -1;
+        if (!chordExists) {
+            this.spaces.push(msgSpaceId);
         }
-        
-        console.log('::: findChild :::');
-        var child = this.findChild(childId);
-        if(child == null) {
-            console.log('::: addChild :::');
-            child = this.addChild(childId);
+
+        // when we are not the sender
+        if (msgSenderId != this.id) {
+            var child = this.findChild(msgSenderId);
+            if (child == null) {
+                child = new ChordPack(msgSenderId);
+                this.addChild(child);
+            }
+
+            this.links.addLink(msgSenderId, msgSpaceId);
         }
-        
-        console.log('::: addLink :::');
-        this.links.addLink(childId, spaceId);
-        
+
         return true;
-    } else {
+    }
+    else {
         // hand over the event to children
         for (var i = 0; i < this.children.length; i++) {
             if (this.children[i].dispatchEvent(headers, msg)) {
@@ -52,65 +53,59 @@ ChordPack.prototype.dispatchEvent = function(headers, msg) {
             }
         }
     }
-    
+
     return false;
-}
+};
 
 /**
- * child: ChordPack
- * return ChordPack
+ * Use this function to add an existing chordPack
+ * for example when switching the root chordPack
  */
-ChordPack.prototype.addChild = function (childContextId, spaceId) {
-    var child = new ChordPack(childContextId);
-    
+ChordPack.prototype.attachChordPack = function(chordPack, msgSpaceId) {
+    var chordExists = this.spaces.indexOf(msgSpaceId) != -1;
+    if (!chordExists) {
+        this.spaces.push(msgSpaceId);
+    }
+
+    this.addChild(chordPack);
+
+    this.links.addLink(chordPack.id, msgSpaceId);
+};
+
+/**
+ * ChordPack
+ */
+ChordPack.prototype.addChild = function(child) {
     this.children.push(child);
-    
-    return child;
-}
+};
 
 /**
  * Find a child corresponding to the id
  * return ChordPack
  */
-ChordPack.prototype.findChild = function (contextId) {
+ChordPack.prototype.findChild = function(contextId) {
     for (var i = 0; i < this.children.length; i++) {
-        if(this.children[i].id == contextId) {
+        if (this.children[i].id == contextId) {
             return this.children[i];
         }
     }
     return null;
-}
+};
 
-ChordPack.prototype.removeChild = function (child) {
-    this.children = this.children.filter(function (el) {
+ChordPack.prototype.removeChild = function(child) {
+    this.children = this.children.filter(function(el) {
         return el.id != child.id;
     });
-}
+};
 
-ChordPack.prototype.update = function () {
-    
-    updateNodes();
-    updateChords();
-    
-    // build a d3js root
-    var root = {
-        children: agentsModel
-    };
-
-    // populate bubble layout with root
-    nodes = bubble.nodes(root);
-
-    buildChords();
-    
-}
-
-ChordPack.prototype.toJSON = function () {
+ChordPack.prototype.toJSON = function() {
     var obj = {
-        links:this.links,
-        children:this.children.map(function (el) {
+        id: this.id,
+        links: this.links,
+        children: this.children.map(function(el) {
             return el.toJSON();
         })
     };
 
     return obj;
- }
+};

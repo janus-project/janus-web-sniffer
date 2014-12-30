@@ -1,57 +1,83 @@
 JanusChordVisualization = function(id) {
     this.id = id;
-    
-    this.width = 800;
-    this.height = 800;
-    
-    this.header_messages = [];
-    this.body_messages = [];
-    this.svg = {};
-    this.chordPackRenderer = new ChordPackRenderer(this.svg);
-    this.chordPack;
+
+    this.chordPackRenderer = new ChordPackRenderer(this.id);
+
+    // root
+    this.chordPack = null;
+
+    this.unhandledEvents = [];
 };
 
 /**
  * Adds an interaction : interaction is the interaction to add
- */ 
+ */
 JanusChordVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
-    
+
     headers = JSON.parse(interaction.headers);
-    this.header_messages.push(headers);
-
     msg = JSON.parse(interaction.body);
-    this.body_messages.push(msg);
 
-    if(msg) {
+    if (msg) {
+        var msgContextId = msg.source.spaceId.contextID;
+        var msgSenderId = msg.source.agentId;
+        var msgSpaceId = msg.source.spaceId.id;
+
         if (this.chordPack == null) {
-            this.chordPack = new ChordPack(msg.source.spaceId.contextID);
+            this.chordPack = new ChordPack(msgContextId);
+            // debug
+            chordPackDEBUG = this.chordPack;
         }
 
-        this.chordPack.dispatchEvent(headers, msg);
+        var isNewRoot = msgSenderId == this.chordPack.id && msgContextId != this.chordPack.id;
+        if (isNewRoot) {
+            console.info('NEW ROOT');
+
+            var oldRoot = this.chordPack;
+            this.chordPack = new ChordPack(msgContextId);
+            this.chordPack.attachChordPack(oldRoot, msgSpaceId);
+        }
+        else {
+            var handled = this.chordPack.dispatchEvent(headers, msg);
+
+            if (!handled) {
+                console.warn('Event has not been handled.', 'Headers: ', headers, 'Msg: ', msg);
+                this.unhandledEvents.push([headers, msg]);
+            }
+
+            // Try to handle previously unhandled events
+            var that = this;
+            var events = this.unhandledEvents;
+            this.unhandledEvents = [];
+            events.forEach(function(el) {
+                var handled = that.chordPack.dispatchEvent(el[0], el[1]);
+
+                if (!handled) {
+                    console.warn('Event has not been handled.', 'Headers: ', el[0], 'Msg: ', el[1]);
+                    that.unhandledEvents.push(el);
+                }
+            });
+
+            console.info('unhandledEvents: ' + this.unhandledEvents.length);
+        }
+
     }
 };
 
 /**
  * Updates the vizualization
- */ 
+ */
 JanusChordVisualization.prototype.update = function() {
-    
-    this.chordPackRenderer.render(chordPack);
-    
+
+    this.chordPackRenderer.render(this.chordPack);
+
 };
 
 /**
  * Creates the svg and intialize it
  */
 JanusChordVisualization.prototype.build = function() {
-    var margin = {top: 300, right: 0, bottom: 10, left: 300};
-    
-    this.svg = d3.select(this.id)
-        .attr("width", this.width + margin.left + margin.right)
-        .attr("height", this.height + margin.top + margin.bottom)
-        .style("margin-left", -margin.left / 10 + "px")
-        .append("g")
-        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        
+
+    this.chordPackRenderer.init(this.chordPack);
+
 };
