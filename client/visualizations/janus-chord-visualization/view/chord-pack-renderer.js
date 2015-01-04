@@ -1,31 +1,42 @@
-ChordPackRenderer = function(id) {
-    this.id = id;
+/**
+ * ChordPackRenderer is responsible for drawing a ChordPack recursively
+ * on the svg with the given svgId.
+ */
+ChordPackRenderer = function(svgId) {
+    this.svgId = svgId;
 
     this.svg = null;
     this.width = 600;
     this.height = 600;
+    this.radius = Math.min(this.width, this.height);
 
     this.depthToRender = 0;
     this.renderAllDepth = false;
+
+    this.colors = d3.scale.ordinal().range(["#e51c23", "#673ab7", "#03a9f4", "#259b24", "#ff9800"]);
+    this.opacities = {
+        contextOpacity: 0.15,
+        chordOpacity: 0.15,
+        linkOpacity: 0.1
+    };
 };
 
 ChordPackRenderer.prototype.init = function(chordPack) {
-    this.svg = d3.select(this.id)
+    this.svg = d3.select(this.svgId)
         .attr("width", this.width)
         .attr("height", this.height)
+        .attr("viewBox", "0 0 " + this.width + " " + this.height)
         .style("margin-top", "50px")
         .style("margin-bottom", "50px");
 };
 
 ChordPackRenderer.prototype.render = function(chordPack) {
+    var that = this;
     if (chordPack) {
-        var radius = Math.min(this.width, this.height);
-        var x = d3.scale.linear().range([0, radius]);
-        var y = d3.scale.linear().range([0, radius]);
 
         // Create new pack layout
         var pack = d3.layout.pack()
-            .size([radius, radius])
+            .size([this.radius, this.radius])
             .padding(0)
             .value(function(d) {
                 // the value must be at least 1
@@ -33,14 +44,16 @@ ChordPackRenderer.prototype.render = function(chordPack) {
             });
 
         // Apply pack layout on data
-        var nodes = pack.nodes(chordPack);
+        var chordPacks = pack.nodes(chordPack);
 
         // Empty svg
-        d3.selectAll("g").remove();
+        this.svg.selectAll("g").remove();
+
+        var scaleLog = d3.scale.log().range([5, 10]);
 
         // Create container for each context
         var svgGroups = this.svg.selectAll("g")
-            .data(nodes)
+            .data(chordPacks)
             .enter()
             .append("g")
             .attr("class", "context")
@@ -48,29 +61,25 @@ ChordPackRenderer.prototype.render = function(chordPack) {
                 return 'id_' + d.id;
             })
             .attr("innerRadius", function(d) {
-                // return d.r - (1 * 10) / (d.depth + 1);
-                return d.r - 10 - 10 * d.depth;
+                return d.r - scaleLog((d.r / that.radius + 1) / 2 * 10);
             })
             .attr("outerRadius", function(d) {
-                return d.r - 10 * d.depth;
+                return d.r;
             })
             .attr("depth", function(d) {
                 return d.depth;
             });
 
         // Create elements
-        renderContexts(svgGroups);
-        renderChords(svgGroups);
-        renderLinks(svgGroups);
+        renderContexts(svgGroups, this.colors, this.opacities, this.svg);
+        renderChords(svgGroups, this.colors, this.opacities);
+        renderLinks(this, svgGroups, this.colors, this.opacities);
     }
 };
 
-function renderContexts(svgGroups) {
+function renderContexts(svgGroups, colors, opacities, svg) {
 
-    svgGroups.append("svg:circle")
-        .attr("class", function(d) {
-            return d.children ? "parent" : "child";
-        })
+    svgGroups.append("circle")
         .attr("cx", function(d) {
             return d.x;
         })
@@ -79,12 +88,16 @@ function renderContexts(svgGroups) {
         })
         .attr("r", function(d) {
             return d3.select(this.parentNode).attr("innerRadius");
+        })
+        .style("fill", function(d, i) {
+            return colors(d.depth);
+        })
+        .style("fill-opacity", opacities.contextOpacity)
+        .on("click", function(d) {
+            zoom(svg, d);
         });
 
-    svgGroups.append("svg:text")
-        .attr("class", function(d) {
-            return d.children ? "parent" : "child";
-        })
+    svgGroups.append("text")
         .attr("x", function(d) {
             return d.x;
         })
@@ -94,25 +107,22 @@ function renderContexts(svgGroups) {
         })
         .attr("dy", ".35em")
         .attr("text-anchor", "middle")
-        .style("opacity", function(d) {
-            return d.r > 20 ? 1 - 0.1 * d.depth : 0;
-        })
         .text(function(d) {
             return d.id;
         });
 
 }
 
-function renderChords(svgGroups) {
+function renderChords(svgGroups, colors, opacities) {
 
     svgGroups.append("g")
         .attr("class", "arcs")
         .attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")";
         })
-        .each(function(d, i) {
-            var chords = buildChords(d.links);
-            console.log(chords);
+        .each(function(chordPack, i) {
+            var depth = chordPack.depth;
+            var chords = buildChords(chordPack.links);
 
             var innerRadius = d3.select(this.parentNode).attr("innerRadius");
             var outerRadius = d3.select(this.parentNode).attr("outerRadius");
@@ -125,9 +135,14 @@ function renderChords(svgGroups) {
                     return d.id;
                 })
                 .append("path")
-                .style("fill-opacity", 0)
-                .style("stroke", "#555")
-                .style("stroke-opacity", 0.4)
+                .style("fill", function(d, i) {
+                    return colors(depth);
+                })
+                .style("fill-opacity", opacities.chordOpacity)
+                .style("stroke-opacity", 0.5)
+                .style("stroke", function(d, i) {
+                    return colors(depth);
+                })
                 .attr("d", function(d, i) {
                     return arc(d.source, i);
                 });
@@ -135,18 +150,16 @@ function renderChords(svgGroups) {
 
 }
 
-function renderLinks(svgGroups) {
+function renderLinks(renderer, svgGroups, colors, opacities) {
 
     var diagonal = d3.svg.diagonal.radial();
 
-    svgGroups.append("g")
+    // we don't want links to hide circles so must insert before
+    svgGroups.insert("g", "circle")
         .attr("class", "diagonals")
         .each(function(chordPack, i) {
+            var depth = chordPack.depth;
             var chords = buildChords(chordPack.links);
-            console.log('=======');
-            console.log(chordPack);
-            console.log('chords');
-            console.log(chords);
 
             var parentNode = d3.select(this.parentNode);
             var circle = parentNode.select("circle");
@@ -164,8 +177,12 @@ function renderLinks(svgGroups) {
             d3.select(this).selectAll("g")
                 .data(chords)
                 .enter()
-                .append("g").attr('spaceId', function(d, i) {
+                .append("g")
+                .attr('spaceId', function(d, i) {
                     return d.id;
+                })
+                .attr("contextId", function(d) {
+                    return 'id_' + chordPack.id;
                 })
                 .each(function(chord, i) {
                     var spaceId = chord.id;
@@ -211,7 +228,13 @@ function renderLinks(svgGroups) {
                             }
                         };
 
-                        return [diag1, diag2];
+                        return {
+                            contextId: contextId,
+                            obtuse: chord.source.endAngle - chord.source.startAngle > Math.PI,
+                            circle: circle,
+                            diag1: diag1,
+                            diag2: diag2
+                        };
                     });
 
                     d3.select(this).selectAll("path")
@@ -219,34 +242,43 @@ function renderLinks(svgGroups) {
                         .enter()
                         .append("path")
                         .attr("d", function(d, i) {
-                            var linkRadius = 0;
-
                             // large-arc-flag and sweep-flag for drawing the
                             // elliptical arc curve in the correct direction
                             // if this is not there, arcs are shortest path (no obtuse angles :((( )
-                            var flags = (chordPack.spaces.length == 1) ? '1,0' : '0,0';
+                            var flags = d.obtuse ? '1,0' : '0,0';
 
-                            var pathString = diagonal(d[0], i);
-                            pathString += "L" + String(diagonal(d[1], i)).substr(1);
-                            pathString += "A" + chordRadius + "," + chordRadius + " 0 " + flags + ' ' + d[0].source.x + "," + d[0].source.y;
+                            var pathString = diagonal(d.diag1, i);
+                            pathString += "L" + String(diagonal(d.diag2, i)).substr(1);
+                            pathString += "A" + chordRadius + "," + chordRadius + " 0 " + flags + ' ' + d.diag1.source.x + "," + d.diag1.source.y;
 
-                            console.log('pathString :', pathString);
                             return pathString;
                         })
-                        .style("stroke", function(d) {
-                            return "#F80018";
-                        })
-                        .style("stroke-opacity", .07)
-                        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
-                        .style("fill-opacity", 0.1)
+                        .style('stroke', '#000000')
+                        .style("stroke-opacity", 0)
                         .style("fill", function(d) {
-                            return "#F80018";
+                            return colors(depth);
+                        })
+                        .style("fill-opacity", opacities.linkOpacity)
+                        .each(function(d, i) {
+                            d.circle
+                                .on("mouseover", function(d) {
+                                    highlightCircle(renderer, this, opacities, true);
+                                })
+                                .on("mouseout", function(d) {
+                                    highlightCircle(renderer, this, opacities, false);
+                                });
                         });
                 });
 
         });
 }
 
+/**
+ * For a given BiLink object,
+ * create a chords object from d3.layout.chord().
+ * The chords contains angular data for each chord
+ * such as "startAngle" and "endAngle".
+ */
 function buildChords(biLink) {
     // Create a new chord layout
     var chord = d3.layout.chord()
@@ -273,40 +305,101 @@ function buildChords(biLink) {
     return chords;
 }
 
+/**
+ * Animate and highlight corresponding circle, chord and links
+ */
+function highlightCircle(renderer, circle, opacities, on) {
+    var circleContextId = d3.select(circle.parentNode).attr('id').substr(3);
 
+    // find all svg path element that is a link
+    var links = renderer.svg.selectAll('path').filter(function(d, i) {
+        // only if path contains diagData
+        if (d.diag1 && d.diag2) {
+            return d.contextId == circleContextId;
+        }
+        return false;
+    });
 
-/*
-function zoom(d, i) {
-  //d : cercle sur lequel on a cliqué
+    // animate links
+    links.transition(on ? 150 : 550)
+        .style("fill-opacity", on ? opacities.linkOpacity * 4 : opacities.linkOpacity)
+        .style("stroke-opacity", on ? 0.5 : 0);
 
-  var k = r / d.r / 2; // facteur de zoom (diamètre du cercle par rapport à la taille de l'écran)
+    // animate chord
+    links.each(function(d, i) {
+        var g = d3.select(this.parentNode);
+        var spaceId = g.attr('spaceId');
+        var contextId = g.attr('contextId');
 
-  // domain : définit les fonctions x et y qui retournent position d'un point une fois qu'on applique le zoom
-  // on passe les bornes de l'élément qu'on veut mettre en plein écran
-  x.domain([d.x - d.r, d.x + d.r]);
-  y.domain([d.y - d.r, d.y + d.r]);
+        renderer.svg.select('#' + contextId).selectAll("g.arcs g").filter(function(d) {
+                return d.id == spaceId;
+            }).selectAll('path').transition(on ? 150 : 550)
+            .style("fill-opacity", on ? opacities.chordOpacity * 4 : opacities.chordOpacity);
+    });
 
-  // transition progressive
-  var t = vis.transition()
-      .duration(d3.event.altKey ? 7500 : 750);
-
-  // on récupère tous les cercles
-  t.selectAll("circle")
-      // on fait varier les coordonnées du cercle avec la fonction x (d est le centre de l'élément à bouger)
-      .attr("cx", function(d) { return x(d.x); })
-      .attr("cy", function(d) { return y(d.y); })
-      // on fait varier le rayon par rapport au facteur de zoom
-      .attr("r", function(d) { return k * d.r; });
-
-  // on récupère les champs de texte
-  t.selectAll("text")
-      // variation des coordonnées
-      .attr("x", function(d) { return x(d.x); })
-      .attr("y", function(d) { return y(d.y); })
-      // variation de l'opacité : si le texte a une taille supérieure à 20 on l'affiche, sinon on le masque
-      .style("opacity", function(d) { return k * d.r > 20 ? 1 : 0; });
-
-  node = d;
-  d3.event.stopPropagation();
+    // animate context
+    d3.select(circle).transition(on ? 150 : 550)
+        .style("fill-opacity", on ? 1 : opacities.contextOpacity);
 }
-*/
+
+/**
+ * Zoom in or out.
+ * Triggered when a circle is clicked.
+ */
+function zoom(svg, d) {
+    //d : cercle sur lequel on a cliqué
+    svg.transition()
+        .duration(1000)
+        .attr('viewBox', (d.x - d.r) + " " + (d.y - d.r) + " " + (d.r * 2) + " " + (d.r * 2));
+    return;
+
+    /*var radius = 600;
+
+    var x = d3.scale.linear().range([0, radius]);
+    var y = d3.scale.linear().range([0, radius]);
+
+    var r = 600;
+
+    var k = r / d.r / 2; // facteur de zoom (diamètre du cercle par rapport à la taille de l'écran)
+
+    // domain : définit les fonctions x et y qui retournent position d'un point une fois qu'on applique le zoom
+    // on passe les bornes de l'élément qu'on veut mettre en plein écran
+    x.domain([d.x - d.r, d.x + d.r]);
+    y.domain([d.y - d.r, d.y + d.r]);
+
+
+
+    // transition progressive
+    var t = svg.transition()
+        .duration(d3.event.altKey ? 7500 : 750);
+
+    // on récupère tous les cercles
+    t.selectAll("circle")
+        // on fait varier les coordonnées du cercle avec la fonction x (d est le centre de l'élément à bouger)
+        .attr("cx", function(d) {
+            return x(d.x);
+        })
+        .attr("cy", function(d) {
+            return y(d.y);
+        })
+        // on fait varier le rayon par rapport au facteur de zoom
+        .attr("r", function(d) {
+            return k * d.r;
+        });
+
+    // on récupère les champs de texte
+    t.selectAll("text")
+        // variation des coordonnées
+        .attr("x", function(d) {
+            return x(d.x);
+        })
+        .attr("y", function(d) {
+            return y(d.y);
+        })
+        // variation de l'opacité : si le texte a une taille supérieure à 20 on l'affiche, sinon on le masque
+        .style("opacity", function(d) {
+            return k * d.r > 20 ? 1 : 0;
+        });
+
+    d3.event.stopPropagation();*/
+}

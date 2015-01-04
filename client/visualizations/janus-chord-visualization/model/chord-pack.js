@@ -1,3 +1,7 @@
+/**
+ * ChordPack represents a context with it's holonic hierarchy.
+ * It is used as input to d3.layout.pack() to produce a "bubble" diagram
+ */
 ChordPack = function(contextId) {
     this.id = contextId;
 
@@ -74,9 +78,6 @@ ChordPack.prototype.attachChordPack = function(chordPack, msgSpaceId) {
     this.links.addLink(chordPack.id, msgSpaceId);
 };
 
-/**
- * ChordPack
- */
 ChordPack.prototype.addChild = function(child) {
     this.children.push(child);
 };
@@ -98,16 +99,4 @@ ChordPack.prototype.removeChild = function(child) {
     this.children = this.children.filter(function(el) {
         return el.id != child.id;
     });
-};
-
-ChordPack.prototype.toJSON = function() {
-    var obj = {
-        id: this.id,
-        links: this.links,
-        children: this.children.map(function(el) {
-            return el.toJSON();
-        })
-    };
-
-    return obj;
 };
