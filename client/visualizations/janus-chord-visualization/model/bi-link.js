@@ -3,11 +3,14 @@ BiLink = function() {
     this.spaces = {};
     this.children = {};
 
+    this.orderedSpaces = d3.set();
 }
 
 BiLink.prototype.addLink = function(childId, spaceId) {
     if (this.children[spaceId] == null) {
         this.children[spaceId] = [];
+
+        this.orderedSpaces.add(spaceId);
     }
     if (this.spaces[childId] == null) {
         this.spaces[childId] = [];
@@ -25,8 +28,16 @@ BiLink.prototype.getSpacesByChildId = function(childId) {
     return this.spaces[childId];
 }
 
+BiLink.prototype.getAllSpaces = function() {
+    return this.orderedSpaces.values();
+}
+
+// BiLink.prototype.getAllChildren = function() {
+//     return Object.keys(this.spaces);
+// }
+
 BiLink.prototype.computeChordMatrix = function() {
-    var spaceIds = Object.keys(this.children);
+    var spaceIds = this.orderedSpaces.values();
     var size = spaceIds.length;
 
     var matrix = new Array(size);

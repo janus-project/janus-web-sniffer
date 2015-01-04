@@ -2,25 +2,19 @@ ChordPackRenderer = function(id) {
     this.id = id;
 
     this.svg = null;
-    this.width = 800;
-    this.height = 800;
+    this.width = 600;
+    this.height = 600;
 
+    this.depthToRender = 0;
+    this.renderAllDepth = false;
 };
 
 ChordPackRenderer.prototype.init = function(chordPack) {
-
-    var margin = {
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-    };
-
     this.svg = d3.select(this.id)
-        .attr("width", this.width + margin.left + margin.right)
-        .attr("height", this.height + margin.top + margin.bottom)
-        .style("margin-left", -margin.left / 10 + "px");
-
+        .attr("width", this.width)
+        .attr("height", this.height)
+        .style("margin-top", "50px")
+        .style("margin-bottom", "50px");
 };
 
 ChordPackRenderer.prototype.render = function(chordPack) {
@@ -32,7 +26,7 @@ ChordPackRenderer.prototype.render = function(chordPack) {
         // Create new pack layout
         var pack = d3.layout.pack()
             .size([radius, radius])
-            .padding(10)
+            .padding(0)
             .value(function(d) {
                 // the value must be at least 1
                 return d.spaces.length + 1;
@@ -45,35 +39,35 @@ ChordPackRenderer.prototype.render = function(chordPack) {
         d3.selectAll("g").remove();
 
         // Create container for each context
-        this.svgGroups = this.svg.selectAll("g")
+        var svgGroups = this.svg.selectAll("g")
             .data(nodes)
             .enter()
             .append("g")
             .attr("class", "context")
             .attr("id", function(d) {
-                return d.id;
+                return 'id_' + d.id;
             })
             .attr("innerRadius", function(d) {
                 // return d.r - (1 * 10) / (d.depth + 1);
-                return d.r - 10;
+                return d.r - 10 - 10 * d.depth;
             })
             .attr("outerRadius", function(d) {
-                return d.r;
+                return d.r - 10 * d.depth;
             })
             .attr("depth", function(d) {
                 return d.depth;
             });
 
         // Create elements
-        this.renderContexts();
-        this.renderChords();
-        this.renderLinks(chordPack.links);
+        renderContexts(svgGroups);
+        renderChords(svgGroups);
+        renderLinks(svgGroups);
     }
 };
 
-ChordPackRenderer.prototype.renderContexts = function() {
+function renderContexts(svgGroups) {
 
-    this.svgGroups.append("svg:circle")
+    svgGroups.append("svg:circle")
         .attr("class", function(d) {
             return d.children ? "parent" : "child";
         })
@@ -87,7 +81,7 @@ ChordPackRenderer.prototype.renderContexts = function() {
             return d3.select(this.parentNode).attr("innerRadius");
         });
 
-    this.svgGroups.append("svg:text")
+    svgGroups.append("svg:text")
         .attr("class", function(d) {
             return d.children ? "parent" : "child";
         })
@@ -107,11 +101,11 @@ ChordPackRenderer.prototype.renderContexts = function() {
             return d.id;
         });
 
-};
+}
 
-ChordPackRenderer.prototype.renderChords = function() {
+function renderChords(svgGroups) {
 
-    this.svgGroups.append("g")
+    svgGroups.append("g")
         .attr("class", "arcs")
         .attr("transform", function(d) {
             return "translate(" + d.x + "," + d.y + ")";
@@ -127,6 +121,9 @@ ChordPackRenderer.prototype.renderChords = function() {
             d3.select(this).selectAll("path")
                 .data(chords)
                 .enter()
+                .append('g').attr('spaceId', function(d, i) {
+                    return d.id;
+                })
                 .append("path")
                 .style("fill-opacity", 0)
                 .style("stroke", "#555")
@@ -136,35 +133,119 @@ ChordPackRenderer.prototype.renderChords = function() {
                 });
         });
 
-};
+}
 
-ChordPackRenderer.prototype.renderLinks = function() {
+function renderLinks(svgGroups) {
 
+    var diagonal = d3.svg.diagonal.radial();
 
-    /*  ARC SEGMENTS */
-    // this.svgGroups.append("g")
-    //     .attr("class", "arc")
-    //     .append("path")
-    //     .attr("id", function(d) {
-    //         return "a_" + d.Key;
-    //     })
-    //     // .style("fill", function (d) {
-    //     //     return (d.PTY == "DEM") ? demColor : (d.PTY == "REP") ? repColor : otherColor;
-    //     // })
-    //     .style("fill-opacity", .2)
-    //     .attr("d", function(d, i) {
-    //         var newArc = {};
-    //         var relatedChord = chordsById[d.CMTE_ID];
+    svgGroups.append("g")
+        .attr("class", "diagonals")
+        .each(function(chordPack, i) {
+            var chords = buildChords(chordPack.links);
+            console.log('=======');
+            console.log(chordPack);
+            console.log('chords');
+            console.log(chords);
 
-    //         newArc.startAngle = relatedChord.currentAngle;
-    //         relatedChord.currentAngle = relatedChord.currentAngle + (Number(d.TRANSACTION_AMT) / relatedChord.value) * (relatedChord.endAngle - relatedChord.startAngle);
-    //         newArc.endAngle = relatedChord.currentAngle;
-    //         newArc.value = Number(d.TRANSACTION_AMT);
-    //         var arc = d3.svg.arc(d, i).innerRadius(linkRadius).outerRadius(innerRadius);
+            var parentNode = d3.select(this.parentNode);
+            var circle = parentNode.select("circle");
 
-    //         return arc(newArc, i);
-    //     });
-};
+            // X,Y are the coordinates of the parent
+            // used to offset the children's links to the correct position
+            var X = Number(circle.attr("cx"));
+            var Y = Number(circle.attr("cy"));
+            var chordRadius = Number(circle.attr("r"));
+
+            // for each space that exists in this context
+            // find child context
+            // draw link between child and space
+
+            d3.select(this).selectAll("g")
+                .data(chords)
+                .enter()
+                .append("g").attr('spaceId', function(d, i) {
+                    return d.id;
+                })
+                .each(function(chord, i) {
+                    var spaceId = chord.id;
+                    var childrenId = chordPack.links.getChildrenBySpaceId(spaceId);
+
+                    // loop through children and make data for diagonal generator
+                    var diagData = childrenId.map(function(contextId) {
+
+                        // current child's centre
+                        var circle = d3.select("#id_" + contextId).select("circle");
+                        var cx = Number(circle.attr("cx"));
+                        var cy = Number(circle.attr("cy"));
+
+                        // chords angle are clockwise starting at noon
+                        // to use trigonometry, we need counterclockwise (direct)
+                        // starting at 3 o'clock ==> hence transformation
+                        var startAngle = -chord.source.startAngle + Math.PI / 2;
+                        var endAngle = -chord.source.endAngle + Math.PI / 2;
+
+                        // link from the start of the chord
+                        // to the center of the child
+                        var diag1 = {
+                            source: {
+                                x: X + Math.cos(startAngle) * chordRadius,
+                                y: Y - Math.sin(startAngle) * chordRadius
+                            },
+                            target: {
+                                x: cx,
+                                y: cy
+                            }
+                        };
+
+                        // link from the center of the child
+                        // to the end of the chord
+                        var diag2 = {
+                            source: {
+                                x: cx,
+                                y: cy
+                            },
+                            target: {
+                                x: X + Math.cos(endAngle) * chordRadius,
+                                y: Y - Math.sin(endAngle) * chordRadius
+                            }
+                        };
+
+                        return [diag1, diag2];
+                    });
+
+                    d3.select(this).selectAll("path")
+                        .data(diagData)
+                        .enter()
+                        .append("path")
+                        .attr("d", function(d, i) {
+                            var linkRadius = 0;
+
+                            // large-arc-flag and sweep-flag for drawing the
+                            // elliptical arc curve in the correct direction
+                            // if this is not there, arcs are shortest path (no obtuse angles :((( )
+                            var flags = (chordPack.spaces.length == 1) ? '1,0' : '0,0';
+
+                            var pathString = diagonal(d[0], i);
+                            pathString += "L" + String(diagonal(d[1], i)).substr(1);
+                            pathString += "A" + chordRadius + "," + chordRadius + " 0 " + flags + ' ' + d[0].source.x + "," + d[0].source.y;
+
+                            console.log('pathString :', pathString);
+                            return pathString;
+                        })
+                        .style("stroke", function(d) {
+                            return "#F80018";
+                        })
+                        .style("stroke-opacity", .07)
+                        // .style("stroke-width",function (d) { return d.links[0].strokeWeight;})
+                        .style("fill-opacity", 0.1)
+                        .style("fill", function(d) {
+                            return "#F80018";
+                        });
+                });
+
+        });
+}
 
 function buildChords(biLink) {
     // Create a new chord layout
@@ -182,21 +263,12 @@ function buildChords(biLink) {
     // Output from chord layout
     var chords = chord.chords();
 
-    // chords.forEach(function(d, index) {
-    //     d.angle = (d.source.startAngle + d.source.endAngle) / 2
-    //     var o = {
-    //         startAngle: d.source.startAngle,
-    //         endAngle: d.source.endAngle,
-    //         index: d.source.index,
-    //         value: d.source.value,
-    //         currentAngle: d.source.startAngle,
-    //         currentLinkAngle: d.source.startAngle,
-    //         Amount: d.source.value,
-    //         source: d.source,
-    //         relatedLinks: []
-    //     };
-    //     chordsById[d.label] = o;
-    // });
+    // dynamically add spaceId to each chord
+    var spaces = biLink.getAllSpaces();
+    chords.forEach(function(el) {
+        var index = el.source.index;
+        el.id = spaces[index];
+    });
 
     return chords;
 }

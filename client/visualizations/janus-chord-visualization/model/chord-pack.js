@@ -18,8 +18,8 @@ ChordPack = function(contextId) {
  */
 ChordPack.prototype.dispatchEvent = function(headers, msg) {
     // console.log('dispatchEvent: ' + msg.source.agentId + ' | ' + msg.source.spaceId.id);
-    // msg.source.spaceId.contextID : ÉMETTEUR DU MESSAGE
-    // msg.source.agentId : RÉCÉPTEUR DU MESSAGE
+    // msg.source.spaceId.contextID : parent
+    // msg.source.agentId : child
 
     var mustHandle = (msg.source.spaceId.contextID == this.id);
 
@@ -32,9 +32,11 @@ ChordPack.prototype.dispatchEvent = function(headers, msg) {
             this.spaces.push(msgSpaceId);
         }
 
-        // when we are not the sender
+        // if the message was sent by an agent that is not this chord-pack
         if (msgSenderId != this.id) {
+            // we try to find the sender in this agent's children
             var child = this.findChild(msgSenderId);
+            // if we don't find it, we create it
             if (child == null) {
                 child = new ChordPack(msgSenderId);
                 this.addChild(child);

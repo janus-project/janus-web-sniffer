@@ -9,59 +9,72 @@ JanusChordVisualization = function(id) {
     this.unhandledEvents = [];
 };
 
+/*addFakeInteractions = true;*/
+
 /**
  * Adds an interaction : interaction is the interaction to add
  */
 JanusChordVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
 
+    /*if (!addFakeInteractions) {
+        return;
+    }
+
+    addFakeInteractions = false;*/
+
     headers = JSON.parse(interaction.headers);
     msg = JSON.parse(interaction.body);
 
-    if (msg) {
-        var msgContextId = msg.source.spaceId.contextID;
-        var msgSenderId = msg.source.agentId;
-        var msgSpaceId = msg.source.spaceId.id;
+    /*for (var i = 0; i < SampleInteractions.length; i++) {
+        headers = JSON.parse(SampleInteractions[i].headers);
+        msg = JSON.parse(SampleInteractions[i].body);*/
 
-        if (this.chordPack == null) {
-            this.chordPack = new ChordPack(msgContextId);
-            // debug
-            chordPackDEBUG = this.chordPack;
-        }
+        if (msg) {
+            var msgContextId = msg.source.spaceId.contextID;
+            var msgSenderId = msg.source.agentId;
+            var msgSpaceId = msg.source.spaceId.id;
 
-        var isNewRoot = msgSenderId == this.chordPack.id && msgContextId != this.chordPack.id;
-        if (isNewRoot) {
-            console.info('NEW ROOT');
-
-            var oldRoot = this.chordPack;
-            this.chordPack = new ChordPack(msgContextId);
-            this.chordPack.attachChordPack(oldRoot, msgSpaceId);
-        }
-        else {
-            var handled = this.chordPack.dispatchEvent(headers, msg);
-
-            if (!handled) {
-                console.warn('Event has not been handled.', 'Headers: ', headers, 'Msg: ', msg);
-                this.unhandledEvents.push([headers, msg]);
+            if (this.chordPack == null) {
+                this.chordPack = new ChordPack(msgContextId);
+                // debug
+                chordPackDEBUG = this.chordPack;
             }
 
-            // Try to handle previously unhandled events
-            var that = this;
-            var events = this.unhandledEvents;
-            this.unhandledEvents = [];
-            events.forEach(function(el) {
-                var handled = that.chordPack.dispatchEvent(el[0], el[1]);
+            var isNewRoot = msgSenderId == this.chordPack.id && msgContextId != this.chordPack.id;
+            if (isNewRoot) {
+                console.info('NEW ROOT');
+
+                var oldRoot = this.chordPack;
+                this.chordPack = new ChordPack(msgContextId);
+                this.chordPack.attachChordPack(oldRoot, msgSpaceId);
+            }
+            else {
+                var handled = this.chordPack.dispatchEvent(headers, msg);
 
                 if (!handled) {
-                    console.warn('Event has not been handled.', 'Headers: ', el[0], 'Msg: ', el[1]);
-                    that.unhandledEvents.push(el);
+                    console.warn('Event has not been handled.', 'Headers: ', headers, 'Msg: ', msg);
+                    this.unhandledEvents.push([headers, msg]);
                 }
-            });
 
-            console.info('unhandledEvents: ' + this.unhandledEvents.length);
+                // Try to handle previously unhandled events
+                var that = this;
+                var events = this.unhandledEvents;
+                this.unhandledEvents = [];
+                events.forEach(function(el) {
+                    var handled = that.chordPack.dispatchEvent(el[0], el[1]);
+
+                    if (!handled) {
+                        console.warn('Event has not been handled.', 'Headers: ', el[0], 'Msg: ', el[1]);
+                        that.unhandledEvents.push(el);
+                    }
+                });
+
+                console.info('unhandledEvents: ' + this.unhandledEvents.length);
+            }
+
         }
-
-    }
+    /*}*/
 };
 
 /**
