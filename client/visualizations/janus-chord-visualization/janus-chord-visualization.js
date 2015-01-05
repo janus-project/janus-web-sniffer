@@ -9,26 +9,14 @@ JanusChordVisualization = function(svgId) {
     this.unhandledEvents = [];
 };
 
-// addFakeInteractions = true;
- 
 /**
  * Adds an interaction : interaction is the interaction to add
  */
 JanusChordVisualization.prototype.addInteraction = function(interaction) {
     var headers, msg;
 
-    // if (!addFakeInteractions) {
-    //     return;
-    // }
-
-    // addFakeInteractions = false;
-
     headers = JSON.parse(interaction.headers);
     msg = JSON.parse(interaction.body);
-
-    // for (var i = 0; i < SampleInteractions.length; i++) {
-    //     headers = JSON.parse(SampleInteractions[i].headers);
-    //     msg = JSON.parse(SampleInteractions[i].body);
 
     if (msg) {
         var msgContextId = msg.source.spaceId.contextID;
@@ -53,7 +41,6 @@ JanusChordVisualization.prototype.addInteraction = function(interaction) {
             var handled = this.chordPack.dispatchEvent(headers, msg);
 
             if (!handled) {
-                console.warn('Event has not been handled.', 'Headers: ', headers, 'Msg: ', msg);
                 this.unhandledEvents.push([headers, msg]);
             }
 
@@ -65,16 +52,12 @@ JanusChordVisualization.prototype.addInteraction = function(interaction) {
                 var handled = that.chordPack.dispatchEvent(el[0], el[1]);
 
                 if (!handled) {
-                    console.warn('Event has not been handled.', 'Headers: ', el[0], 'Msg: ', el[1]);
                     that.unhandledEvents.push(el);
                 }
             });
-
-            console.info('unhandledEvents: ' + this.unhandledEvents.length);
         }
 
     }
-    // }
 };
 
 /**
@@ -91,6 +74,6 @@ JanusChordVisualization.prototype.update = function() {
  */
 JanusChordVisualization.prototype.build = function() {
 
-    this.chordPackRenderer.init(this.chordPack);
+    this.chordPackRenderer.init();
 
 };

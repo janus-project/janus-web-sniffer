@@ -1,6 +1,7 @@
 /**
  * BiLink is a data structure
- * representing relationchips between children and spaces.
+ * representing relationships between children (agents inside a context)
+ * and the spaces of that context
  */
 BiLink = function() {
     this.spaces = {};
@@ -8,10 +9,10 @@ BiLink = function() {
 
     // unique and ordered spaces
     this.orderedSpaces = d3.set();
-}
+};
 
 /**
- * Add a relationship between child and space
+ * Add a relationship between child agent and space
  */
 BiLink.prototype.addLink = function(childId, spaceId) {
     if (this.children[spaceId] == null) {
@@ -43,7 +44,7 @@ BiLink.prototype.getAllSpaces = function() {
 /**
  * computeChordMatrix produces a square matrix
  * necessary as input for d3.layout.chord().
- * The matrix is an identity matrix
+ * The matrix is a diagonal matrix
  * where each value represents the weight of the relationship
  */
 BiLink.prototype.computeChordMatrix = function() {
