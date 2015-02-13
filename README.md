@@ -40,7 +40,7 @@ $ npm config set https-proxy http://proxy.company.com:8080
 ```
 
 ###How to be sure you're listening the right port
-We use a the zmq plugin to listen a ZeroMQ socket, but when you launch an agent don't forget to specify on the command the following option
+We use the zmq plugin to listen a ZeroMQ socket, but when you launch an agent don't forget to specify on the command line in the launch configuration the following JVM option
 ```
 -Dnetwork.pub.uri=tcp://10.20.2.144:29118
 ```
