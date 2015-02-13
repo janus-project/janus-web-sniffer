@@ -96,8 +96,7 @@ circle.child {
 }
 
 #legend {
-  position: absolute;
-  top: 345px;
+  float: right;
   right: 50px;
   width: 200px;
   height: 200px;
