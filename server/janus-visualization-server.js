@@ -66,7 +66,7 @@ bound_handle_message = Meteor.bindEnvironment(handle_event_envelope, function(e)
 });
 
 Meteor.startup(function () {
-    var janus_uri = "tcp://172.18.4.141:19118";
+    var janus_uri = "tcp://10.20.2.144:29118";
 
     var zmq = Meteor.require("zmq");
     var sock = zmq.socket("sub");

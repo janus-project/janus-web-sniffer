@@ -1,5 +1,22 @@
 {
   "dependencies": {
+    "cryptojs": {
+      "version": "2.5.3"
+    },
+    "jquery": {
+      "version": "2.1.1"
+    },
+    "meteor-npm": {
+      "version": "0.1.11",
+      "dependencies": {
+        "rimraf": {
+          "version": "2.2.8"
+        },
+        "mkdirp": {
+          "version": "0.3.5"
+        }
+      }
+    },
     "zmq": {
       "version": "2.6.0",
       "dependencies": {
@@ -13,9 +30,6 @@
           "version": "1.1.1"
         }
       }
-    },
-    "cryptojs": {
-      "version": "2.5.3"
     }
   }
 }

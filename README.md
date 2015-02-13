@@ -38,3 +38,31 @@ server/janus-visualisation-server.js, start mongodb demon and type
 $ npm config set proxy http://proxy.company.com:8080
 $ npm config set https-proxy http://proxy.company.com:8080
 ```
+
+###How to be sure you're listening the right port
+We use a the zmq plugin to listen a ZeroMQ socket, but when you launch an agent don't forget to specify on the command the following option
+```
+-Dnetwork.pub.uri=tcp://10.20.2.144:29118
+```
+And be sure, it matches the port definition specified in server/janus-visualization-server.js
+```
+Meteor.startup(function () {
+    var janus_uri = "tcp://10.20.2.144:29118";
+
+    var zmq = Meteor.require("zmq");
+    var sock = zmq.socket("sub");
+
+    sock.connect(janus_uri);
+    sock.subscribe('');
+
+    console.log('Connected to '+janus_uri);
+    
+    sock.on('message', bound_handle_message);
+});
+```
+If both match, you will able to sniff any trame on the socket and thus displaying the corresponding information on the various d3js visualizations.
+Be sure you do not activate the encryption over the socket, the zmq plugin is unable to decrypt it.
+
+
+
+
