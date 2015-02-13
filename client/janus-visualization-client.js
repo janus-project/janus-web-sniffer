@@ -5,6 +5,7 @@ var InteractionsTable = new Meteor.Collection("janus_event_visualization");
 jtv = new JanusTreeVisualization("#janus-tree");
 jmv = new JanusMatrixVisualization("#janus-matrix");
 jcv = new JanusCirclePackVisualization("#janus-circle-pack");
+jchv = new JanusChordVisualization("#janus-chords");
 
 visualizations = new Array();
 
@@ -12,6 +13,7 @@ visualizations = new Array();
 visualizations.push(jtv);
 visualizations.push(jmv);
 visualizations.push(jcv);
+visualizations.push(jchv);
 
 /* handled when a change is observed in the collection */
 Interactions.find({}).observeChanges({
@@ -58,6 +60,7 @@ $(document).ready(function(){
     $('#janus-tree-visualization').hide();
     $('#janus-matrix-visualization').hide();
     $('#janus-circle-pack-visualization').hide();
+    $('#janus-chords-visualization').hide();
 
     $(function() {
        $('#display_tree').click(function() {
@@ -76,6 +79,13 @@ $(document).ready(function(){
     $(function() {
        $('#display_circle').click(function() {
            display('#janus-circle-pack-visualization');
+           return false;
+       });        
+   });
+   
+   $(function() {
+       $('#display_chords').click(function() {
+           display('#janus-chords-visualization');
            return false;
        });        
    });
