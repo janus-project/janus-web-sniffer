@@ -6,6 +6,8 @@ jtv = new JanusTreeVisualization("#janus-tree");
 jmv = new JanusMatrixVisualization("#janus-matrix");
 jcv = new JanusCirclePackVisualization("#janus-circle-pack");
 jchv = new JanusChordVisualization("#janus-chords");
+jtm = new JanusTreeMapVisualization("#janus-treemap");
+
 
 visualizations = new Array();
 
@@ -14,6 +16,7 @@ visualizations.push(jtv);
 visualizations.push(jmv);
 visualizations.push(jcv);
 visualizations.push(jchv);
+visualizations.push(jtm);
 
 /* handled when a change is observed in the collection */
 Interactions.find({}).observeChanges({
@@ -61,6 +64,10 @@ $(document).ready(function(){
     $('#janus-matrix-visualization').hide();
     $('#janus-circle-pack-visualization').hide();
     $('#janus-chords-visualization').hide();
+    $('#janus-treemap-visualization').hide();
+    $('#legend').hide();
+    $('#button').hide();
+
 
     $(function() {
        $('#display_tree').click(function() {
@@ -82,10 +89,21 @@ $(document).ready(function(){
            return false;
        });        
    });
+
    
    $(function() {
        $('#display_chords').click(function() {
            display('#janus-chords-visualization');
+           return false;
+       });        
+   });
+
+    $(function() {
+       $('#display_treemap').click(function() {
+           display('#janus-treemap-visualization');
+           display('#legend');
+           display('#button');
+
            return false;
        });        
    });

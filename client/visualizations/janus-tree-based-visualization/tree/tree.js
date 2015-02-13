@@ -25,7 +25,7 @@ Tree.prototype.getMaxDepth = function() {
 }
 
 /**
- * Adds a node in the tree
+ * Adds a node in the treeN
  *  node : Node is the node to add
  *  parentName : String is the name of the parent to attach node
  */ 
@@ -61,3 +61,39 @@ Tree.prototype.addNode = function(node, parentName) {
         }
     }
 };
+
+Tree.prototype.addMapNode = function(node, parentName) {
+    if(this.root == null) {
+        /* the root must no be a context nor an id */
+        this.root = node; 
+    } else {
+        var predicatParams = parentName;
+        var predicat = function(node, nodeName) {
+            if(node.name == nodeName)
+                return true;
+            return false;
+        };
+        var actionParams = node;
+        var action = function(parent, node) {
+            var exists = false;
+            for(var i = 0; i < parent.children.length; ++i) {
+                var child = parent.children[i];
+                if(node.name == child.name) {
+                    /* Dont add but update count */
+                    exists = true;
+                    child.count++;
+                    break;
+                }
+            }
+            if(!exists) {
+                node.depth = parent.depth + 1;
+                parent.children.push(node);
+            }
+            return exists;
+        };
+
+        if(this.root.visit(predicat, predicatParams, action, actionParams)) {
+            this.nodeCount++;
+        }
+    }
+}

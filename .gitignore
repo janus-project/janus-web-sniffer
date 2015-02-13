@@ -1,0 +1,8 @@
+# Meteor
+.meteor/local
+.meteor/meteorite
+
+# Files
+*~
+*.swp
+public

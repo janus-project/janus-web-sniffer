@@ -76,7 +76,7 @@ circle.child {
   pointer-events: none;
 }
 
-/* jauns matrix hover messages */
+/* janus matrix hover messages */
 .hovermessage {
   background-color: #eee; 
   padding: 0px;
@@ -89,4 +89,89 @@ circle.child {
   font-size: 11px;
 }
 
+/* janus treemap visu */
+#janus-treemap-visualization  
+{
+  margin: 20px 0 0 4px;
+}
+
+#legend {
+  position: absolute;
+  top: 345px;
+  right: 50px;
+  width: 200px;
+  height: 200px;
+  border-right: 1px solid #708090;
+  border-bottom: 1px solid #708090;
+}
+
+#legend li {
+  margin-top: 15px;
+  text-align: center;
+  vertical-align: middle;
+  list-style-type: none;
+  font-size: 2em;
+}
+
+#legend h2 {
+  vertical-align: middle;
+  line-height: 40px;
+  list-style-type: none;
+}
+
+#button {
+  cursor: pointer;
+  position: absolute;
+  top: 295px;
+  right: 200px;
+  width: 200px;
+  height: 40px;
+  background: #708090;
+  color: black;
+  text-align: center;
+  vertical-align: middle;
+  line-height: 40px;
+  font-size: 2em;
+}
+
+text {
+  pointer-events: none;
+}
+
+.grandparent text {
+  font-weight: bold;
+}
+
+rect {
+  fill: none;
+  stroke: #fff;
+}
+
+ 
+rect.parent,
+.grandparent rect {
+  stroke-width: 2px;
+}
+
+.grandparent rect {
+  fill: #708090;
+}
+
+.grandparent:hover rect {
+  fill: #708090;
+}
+
+.children rect.parent,
+.grandparent rect {
+  cursor: pointer;
+}
+
+.children rect.parent {
+  fill: #bbb;
+  fill-opacity: .5;
+}
+
+.children:hover rect.child {
+  fill: #bbb;
+}
 
